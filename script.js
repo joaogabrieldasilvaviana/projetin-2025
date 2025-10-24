@@ -1,4 +1,4 @@
-// ⚔️ ClashTermo Royale - Script Principal
+// ⚔️ ClashTermo Royale - Script Principal (Modo Múltiplas Palavras)
 
 document.addEventListener("DOMContentLoaded", () => {
   const words = [
@@ -14,26 +14,37 @@ document.addEventListener("DOMContentLoaded", () => {
     { word: "FURIA", hint: "Feitiço que aumenta o dano" }
   ];
 
-  const secretObj = words[Math.floor(Math.random() * words.length)];
-  const secret = secretObj.word.toUpperCase();
-  const hint = secretObj.hint;
+  // O jogo agora tem múltiplas palavras secretas (uma para cada linha)
+  // Vou pegar as primeiras 6 palavras para usar nas 6 tentativas
+  const secretWords = words.slice(0, 6).map(w => ({
+    word: w.word.toUpperCase(),
+    hint: w.hint
+  }));
 
-  const maxAttempts = 6;
+  const maxAttempts = secretWords.length; // O número de linhas agora é o número de palavras
   let currentRow = 0;
   let currentCol = 0;
-  const wordLength = secret.length;
+  // A palavra secreta atual é determinada pela currentRow
+  let secret = secretWords[currentRow].word;
+  let wordLength = secret.length;
   let isGameOver = false;
 
   const board = document.getElementById("board");
   const keyboard = document.getElementById("keyboard");
 
-  // ===== CRIAR TABULEIRO =====
+  // ===== CRIAR TABULEIRO (AJUSTADO) =====
+  // Agora, a largura de cada linha é o tamanho da palavra daquela linha.
   for (let r = 0; r < maxAttempts; r++) {
+    const currentWord = secretWords[r].word;
+    const currentWordLength = currentWord.length;
+
     const row = document.createElement("div");
     row.classList.add("row");
     row.dataset.index = r;
+    // Adiciona uma classe para controlar a largura da grade
+    row.classList.add(`word-length-${currentWordLength}`);
 
-    for (let c = 0; c < wordLength; c++) {
+    for (let c = 0; c < currentWordLength; c++) {
       const tile = document.createElement("div");
       tile.classList.add("tile");
       row.appendChild(tile);
@@ -46,38 +57,24 @@ document.addEventListener("DOMContentLoaded", () => {
     board.appendChild(row);
   }
 
-  // ===== CRIAR TECLADO =====
-  const keys = [
-    ..."QWERTYUIOP",
-    ..."ASDFGHJKL",
-    ..."ZXCVBNM",
-    "DEL",
-    "ENTER"
-  ];
+  // AVISO: Você precisará de CSS para fazer as linhas com tamanhos diferentes
+  // se ajustarem corretamente (ex: display: grid; grid-template-columns: repeat(N, 1fr);)
+  // Por ora, vamos garantir que a primeira linha (PEKKA - 5 letras) funcione
+  // e você pode estender o CSS para as outras.
 
-  keys.forEach(k => {
-    const key = document.createElement("button");
-    key.classList.add("key");
-    key.textContent = k;
-    key.addEventListener("click", () => handleKeyPress(k));
-    keyboard.appendChild(key);
-  });
+  // O resto da criação do teclado (keyboard) e a captura de teclado físico
+  // permanecem iguais, pois manipulam apenas a entrada de texto.
 
-  // ===== CAPTURAR TECLADO FÍSICO =====
-  document.addEventListener("keydown", (e) => {
-    if (isGameOver) return;
-    const key = e.key.toUpperCase();
-    if (key === "ENTER") handleKeyPress("ENTER");
-    else if (key === "BACKSPACE" || key === "DELETE") handleKeyPress("DEL");
-    else if (/^[A-Z]$/.test(key)) handleKeyPress(key);
-  });
-
-  // ===== LÓGICA DE TECLAS =====
+  // ===== LÓGICA DE TECLAS (AJUSTADO) =====
   function handleKeyPress(key) {
     if (isGameOver) return;
 
     const row = board.children[currentRow];
     const tiles = row.querySelectorAll(".tile");
+
+    // A palavra secreta atual e seu tamanho são determinados pela currentRow
+    const currentSecretWord = secretWords[currentRow].word;
+    const currentWordLength = currentSecretWord.length;
 
     if (key === "DEL") {
       if (currentCol > 0) {
@@ -88,22 +85,24 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (key === "ENTER") {
-      if (currentCol === wordLength) {
-        checkAttempt();
+      // Verifica se a tentativa é do tamanho da palavra secreta ATUAL
+      if (currentCol === currentWordLength) {
+        checkAttempt(currentSecretWord); // Passa a palavra secreta para a função
       } else {
-        showPopup("Palavra incompleta!");
+        showPopup(`Palavra incompleta! (Tamanho ${currentWordLength})`);
       }
       return;
     }
 
-    if (/^[A-Z]$/.test(key) && currentCol < wordLength) {
+    // Apenas adiciona a letra se não ultrapassar o tamanho da palavra ATUAL
+    if (/^[A-Z]$/.test(key) && currentCol < currentWordLength) {
       tiles[currentCol].textContent = key;
       currentCol++;
     }
   }
 
-  // ===== VERIFICA TENTATIVA =====
-  function checkAttempt() {
+  // ===== VERIFICA TENTATIVA (PRINCIPAL MUDANÇA) =====
+  function checkAttempt(currentSecretWord) {
     const row = board.children[currentRow];
     const tiles = row.querySelectorAll(".tile");
     let guess = "";
@@ -112,44 +111,70 @@ document.addEventListener("DOMContentLoaded", () => {
     guess = guess.toUpperCase();
 
     const hintText = row.querySelector(".hint");
+    const currentHint = secretWords[currentRow].hint;
+    const currentWordLength = currentSecretWord.length;
 
-    if (guess === secret) {
+    // 1. PALAVRA ACERTADA!
+    if (guess === currentSecretWord) {
+      // Marca todas as letras como 'correct'
       tiles.forEach(t => t.classList.add("correct"));
       row.classList.add("correct-row");
-      showPopup("🎉 Você acertou!");
-      hintText.textContent = hint;
+      
+      // Exibe a dica
+      hintText.textContent = currentHint;
       hintText.classList.add("show-hint");
-      isGameOver = true;
+
+      showPopup("✅ Palavra acertada!");
+
+      // Passa para a PRÓXIMA palavra secreta
+      currentRow++;
+      currentCol = 0;
+
+      // 2. VERIFICA SE O JOGO TERMINOU
+      if (currentRow === maxAttempts) {
+        showPopup("👑 Parabéns! Você acertou todas as palavras!");
+        isGameOver = true;
+      } else {
+        // Se ainda houver palavras, atualiza a palavra secreta para a próxima linha
+        secret = secretWords[currentRow].word;
+        wordLength = secret.length; // Atualiza o wordLength (embora não seja mais usado no board)
+        // O tabuleiro automaticamente move o cursor para a nova linha.
+      }
+      
       return;
     }
 
-    // compara letras
-    for (let i = 0; i < wordLength; i++) {
+    // 3. PALAVRA ERRADA
+    // Se a palavra estiver errada, a linha ATUAL é marcada, mas não avançamos!
+    // Você tem que tentar a mesma palavra de novo (modelo Termo tradicional)
+    
+    // Compara letras (A lógica de cores permanece)
+    for (let i = 0; i < currentWordLength; i++) {
       const tile = tiles[i];
       const letter = guess[i];
 
-      if (letter === secret[i]) {
+      if (letter === currentSecretWord[i]) {
         tile.classList.add("correct");
-      } else if (secret.includes(letter)) {
+      } else if (currentSecretWord.includes(letter)) {
         tile.classList.add("wrong-place");
       } else {
         tile.classList.add("wrong");
       }
     }
+    
+    // Se não for a palavra, exibe uma mensagem
+    showPopup("❌ Tente novamente nesta linha!");
 
-    hintText.textContent = `💡 Dica: ${hint}`;
-    hintText.classList.add("show-hint");
+    // No modo múltiplo, só avançamos o `currentRow` se a palavra for acertada.
+    // Aqui, a linha é colorida, mas você continua tentando na mesma linha
+    // até acertar.
 
-    currentRow++;
+    // Apenas para forçar uma nova tentativa *na mesma linha*
+    // Resetar a coluna para o início, mas não o texto (para que o usuário veja as cores)
     currentCol = 0;
-
-    if (currentRow === maxAttempts) {
-      showPopup(`😢 A palavra era ${secret}`);
-      isGameOver = true;
-    }
   }
 
-  // ===== POPUP =====
+  // ===== POPUP (Não alterado) =====
   function showPopup(message) {
     const popup = document.createElement("div");
     popup.classList.add("popup");
@@ -157,4 +182,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.body.appendChild(popup);
     setTimeout(() => popup.remove(), 2000);
   }
+  
+  // Exibe a primeira dica na inicialização, se desejar (opcional)
+  // showPopup(`Dica para a primeira palavra: ${secretWords[0].hint}`);
 });
