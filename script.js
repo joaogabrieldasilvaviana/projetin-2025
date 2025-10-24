@@ -6,12 +6,12 @@ document.addEventListener("DOMContentLoaded", () => {
     { word: "GOBLIN", hint: "Verde e rápido" },
     { word: "MINION", hint: "Ataque aéreo barato" },
     { word: "GIANT", hint: "Vai direto nas construções" },
-    { word: "ZAP", hint: "Feitiço elétrico rápido" },
+    { word: "VINHA", hint: "Prende os inimigos" },
     { word: "BOWLER", hint: "Lança pedras grandes" },
     { word: "PRINCE", hint: "Corre e dá carga com a lança" },
     { word: "WIZARD", hint: "Lança bolas de fogo" },
-    { word: "HOG", hint: "Corre e ataca torres" },
-    { word: "FIREBALL", hint: "Feitiço de dano em área" }
+    { word: "GOLEM", hint: "Gigante de Pedra" },
+    { word: "FURIA", hint: "Feitiço que aumenta o dano" }
   ];
 
   const secretObj = words[Math.floor(Math.random() * words.length)];
