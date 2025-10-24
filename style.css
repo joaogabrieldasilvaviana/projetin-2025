@@ -1,240 +1,270 @@
 /* ===============================
-   ⚔️ ClashTermo Royale - Estilo Azul e Dourado
-   =============================== */
+   ⚔️ ClashTermo Royale - Estilo Azul e Dourado
+   =============================== */
 
 /* ===== FONTES E CORES ===== */
 :root {
-  --royal-blue: #0040ff;
-  --royal-blue-dark: #0a1c4b;
-  --royal-blue-light: #1e4fff;
-  --gold: #ffcc00;
-  --gold-dark: #b38b00;
-  --silver: #cfcfcf;
-  --dark-bg: #0d0f1c;
-  --tile-empty: #2b2f3b;
-  --text-light: #f4f4f4;
-  --green-glow: #4cff79;
-  --transition: 0.25s ease;
-  font-family: 'Rajdhani', sans-serif;
+  --royal-blue: #0040ff;
+  --royal-blue-dark: #0a1c4b;
+  --royal-blue-light: #1e4fff;
+  --gold: #ffcc00;
+  --gold-dark: #b38b00;
+  --silver: #cfcfcf;
+  --dark-bg: #0d0f1c;
+  --tile-empty: #2b2f3b;
+  --text-light: #f4f4f4;
+  --green-glow: #4cff79;
+  --transition: 0.25s ease;
+  font-family: 'Rajdhani', sans-serif;
 }
 
 /* ===== RESET ===== */
 * {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 /* ===== LAYOUT ===== */
 body {
-  background: radial-gradient(circle at top, #1a2c6f, #0b0e1d);
-  color: var(--text-light);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  overflow-x: hidden;
+  background: radial-gradient(circle at top, #1a2c6f, #0b0e1d);
+  color: var(--text-light);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  overflow-x: hidden;
 }
 
 .game-container {
-  width: 100%;
-  max-width: 520px;
-  padding: 1.5rem;
-  text-align: center;
-  background: linear-gradient(180deg, #0f1a3a 0%, #0a0e1d 100%);
-  border: 3px solid var(--gold);
-  border-radius: 20px;
-  box-shadow: 0 0 30px #000a, inset 0 0 15px #1a1f3d;
-  position: relative;
+  width: 100%;
+  max-width: 520px;
+  padding: 1.5rem;
+  text-align: center;
+  background: linear-gradient(180deg, #0f1a3a 0%, #0a0e1d 100%);
+  border: 3px solid var(--gold);
+  border-radius: 20px;
+  box-shadow: 0 0 30px #000a, inset 0 0 15px #1a1f3d;
+  position: relative;
 }
 
 /* ===== COROAS ===== */
 .game-container::before,
 .game-container::after {
-  content: "👑";
-  position: absolute;
-  font-size: 2rem;
-  color: var(--gold);
-  top: -20px;
-  text-shadow: 0 0 10px var(--gold-dark);
+  content: "👑";
+  position: absolute;
+  font-size: 2rem;
+  color: var(--gold);
+  top: -20px;
+  text-shadow: 0 0 10px var(--gold-dark);
 }
 .game-container::before { left: 20px; }
 .game-container::after { right: 20px; }
 
 /* ===== CABEÇALHO ===== */
 header h1 {
-  color: var(--gold);
-  text-shadow: 0 0 15px var(--gold-dark), 0 0 5px #fff4;
-  font-size: 2.8rem;
-  margin-bottom: 0.3rem;
-  letter-spacing: 1px;
+  color: var(--gold);
+  text-shadow: 0 0 15px var(--gold-dark), 0 0 5px #fff4;
+  font-size: 2.8rem;
+  margin-bottom: 0.3rem;
+  letter-spacing: 1px;
 }
 
 .subtitle {
-  font-size: 1.1rem;
-  color: var(--silver);
-  text-shadow: 0 0 5px #000;
+  font-size: 1.1rem;
+  color: var(--silver);
+  text-shadow: 0 0 5px #000;
 }
 
 /* ===== TABULEIRO ===== */
 .board {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  margin: 2rem auto;
-  justify-content: center;
-  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin: 2rem auto;
+  justify-content: center;
+  align-items: center;
 }
 
 .row {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 0.5rem;
-  position: relative;
-  transition: 0.3s;
+  display: grid; /* Usa grid para melhor controle de colunas */
+  /* grid-template-columns: repeat(5, 1fr);  <-- REMOVIDO para ser dinâmico */
+  gap: 0.5rem;
+  position: relative;
+  transition: 0.3s;
+  /* Centraliza o grid */
+  margin: 0 auto;
 }
+
+/* 🎯 CONFIGURAÇÃO PARA PALAVRAS DE TAMANHOS VARIÁVEIS (Adicionado/Ajustado) */
+.row.word-length-5 {
+    grid-template-columns: repeat(5, 1fr);
+    max-width: 355px; /* (65px de tile * 5) + (5px de gap * 4) = 345px. Ajuste conforme necessidade */
+}
+
+.row.word-length-6 {
+    grid-template-columns: repeat(6, 1fr);
+    max-width: 425px; /* (65px de tile * 6) + (5px de gap * 5) = 415px */
+}
+
+.row.word-length-7 {
+    grid-template-columns: repeat(7, 1fr);
+    max-width: 495px; /* (65px de tile * 7) + (5px de gap * 6) = 485px */
+}
+
+/* Se as palavras forem muito diferentes em tamanho, considere ajustar o tamanho máximo do tile: */
+@media (max-width: 480px) {
+    .tile {
+        width: 50px; /* Reduz um pouco o tamanho do tile em telas menores */
+        height: 50px;
+        font-size: 1.5rem;
+    }
+    /* E reajuste os max-width das linhas aqui, se necessário */
+}
+/* FIM DOS AJUSTES DE TAMANHO */
+
 
 .tile {
-  width: 65px;
-  height: 65px;
-  background: linear-gradient(180deg, #1a2a60, #101633);
-  border: 2px solid #2d3a6b;
-  border-radius: 10px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 2rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: var(--text-light);
-  transition: var(--transition);
-  box-shadow: inset 0 0 8px #000a, 0 4px 8px #0006;
+  width: 65px;
+  height: 65px;
+  background: linear-gradient(180deg, #1a2a60, #101633);
+  border: 2px solid #2d3a6b;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-light);
+  transition: var(--transition);
+  box-shadow: inset 0 0 8px #000a, 0 4px 8px #0006;
 }
 
-/* ===== ESTADOS DAS LETRAS ===== */
+/* ===== ESTADOS DAS LETRAS (Sem alteração) ===== */
 .tile.correct {
-  background: linear-gradient(180deg, #38b14a, #1d722a);
-  border-color: #49e65c;
-  box-shadow: 0 0 15px #49e65c88;
+  background: linear-gradient(180deg, #38b14a, #1d722a);
+  border-color: #49e65c;
+  box-shadow: 0 0 15px #49e65c88;
 }
 
 .tile.wrong-place {
-  background: linear-gradient(180deg, #c9a00a, #7d6103);
-  border-color: var(--gold);
-  box-shadow: 0 0 15px #ffcc0088;
+  background: linear-gradient(180deg, #c9a00a, #7d6103);
+  border-color: var(--gold);
+  box-shadow: 0 0 15px #ffcc0088;
 }
 
 .tile.wrong {
-  background: linear-gradient(180deg, #30344c, #1c1f30);
-  border-color: #444;
-  opacity: 0.6;
+  background: linear-gradient(180deg, #30344c, #1c1f30);
+  border-color: #444;
+  opacity: 0.6;
 }
 
-/* ===== DICAS ===== */
+/* ===== DICAS (Sem alteração) ===== */
 .hint {
-  grid-column: 1 / -1;
-  font-size: 0.9rem;
-  color: var(--gold);
-  text-shadow: 0 0 5px #000;
-  margin-top: 4px;
-  opacity: 0;
-  transition: 0.5s;
-  text-align: center;
+  grid-column: 1 / -1;
+  font-size: 0.9rem;
+  color: var(--gold);
+  text-shadow: 0 0 5px #000;
+  margin-top: 4px;
+  opacity: 0;
+  transition: 0.5s;
+  text-align: center;
 }
 
 .hint.show-hint {
-  opacity: 1;
+  opacity: 1;
 }
 
-/* ===== LINHA DE ACERTO ===== */
+/* ===== LINHA DE ACERTO (Sem alteração) ===== */
 .correct-row {
-  animation: glowGreen 1.5s ease forwards;
+  animation: glowGreen 1.5s ease forwards;
 }
 
 @keyframes glowGreen {
-  0% {
-    transform: scale(1);
-    box-shadow: 0 0 0px var(--green-glow);
-  }
-  50% {
-    transform: scale(1.03);
-    box-shadow: 0 0 20px var(--green-glow);
-  }
-  100% {
-    transform: scale(1);
-    box-shadow: 0 0 25px var(--green-glow);
-  }
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0px var(--green-glow);
+  }
+  50% {
+    transform: scale(1.03);
+    box-shadow: 0 0 20px var(--green-glow);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 25px var(--green-glow);
+  }
 }
 
-/* ===== TECLADO ===== */
+/* ===== TECLADO (Sem alteração) ===== */
 .keyboard {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.4rem;
-  margin-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem;
+  margin-top: 1rem;
 }
 
 .key {
-  background: linear-gradient(180deg, #24337a, #0f1943);
-  color: var(--text-light);
-  border: 2px solid #3b4b9a;
-  border-radius: 8px;
-  padding: 0.6rem 0.9rem;
-  font-weight: bold;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: var(--transition);
-  box-shadow: inset 0 0 6px #000a, 0 3px 8px #0007;
+  background: linear-gradient(180deg, #24337a, #0f1943);
+  color: var(--text-light);
+  border: 2px solid #3b4b9a;
+  border-radius: 8px;
+  padding: 0.6rem 0.9rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: inset 0 0 6px #000a, 0 3px 8px #0007;
 }
 
 .key:hover {
-  background: linear-gradient(180deg, var(--royal-blue), var(--royal-blue-dark));
-  color: #fff;
-  transform: scale(1.05);
+  background: linear-gradient(180deg, var(--royal-blue), var(--royal-blue-dark));
+  color: #fff;
+  transform: scale(1.05);
 }
 
 .key:active {
-  transform: scale(0.95);
-  box-shadow: inset 0 0 10px #000b;
+  transform: scale(0.95);
+  box-shadow: inset 0 0 10px #000b;
 }
 
-/* ===== POPUP DE MENSAGEM ===== */
+/* ===== POPUP DE MENSAGEM (Sem alteração) ===== */
 .popup {
-  position: fixed;
-  top: 25px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: linear-gradient(90deg, var(--royal-blue), var(--royal-blue-light));
-  color: white;
-  padding: 0.8rem 1.2rem;
-  border-radius: 8px;
-  font-weight: bold;
-  box-shadow: 0 0 15px #0008, 0 0 10px var(--gold-dark);
-  border: 2px solid var(--gold);
-  animation: fadeOut 2s forwards;
+  position: fixed;
+  top: 25px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(90deg, var(--royal-blue), var(--royal-blue-light));
+  color: white;
+  padding: 0.8rem 1.2rem;
+  border-radius: 8px;
+  font-weight: bold;
+  box-shadow: 0 0 15px #0008, 0 0 10px var(--gold-dark);
+  border: 2px solid var(--gold);
+  animation: fadeOut 2s forwards;
 }
 
 @keyframes fadeOut {
-  0% { opacity: 1; }
-  80% { opacity: 1; }
-  100% { opacity: 0; transform: translate(-50%, -20px); }
+  0% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { opacity: 0; transform: translate(-50%, -20px); }
 }
 
-/* ===== RODAPÉ ===== */
+/* ===== RODAPÉ (Sem alteração) ===== */
 footer {
-  margin-top: 2rem;
-  font-size: 0.9rem;
-  color: var(--silver);
-  text-shadow: 0 0 5px #000;
+  margin-top: 2rem;
+  font-size: 0.9rem;
+  color: var(--silver);
+  text-shadow: 0 0 5px #000;
 }
 
 footer a {
-  color: var(--gold);
-  text-decoration: none;
-  font-weight: bold;
+  color: var(--gold);
+  text-decoration: none;
+  font-weight: bold;
 }
 
 footer a:hover {
-  text-decoration: underline;
+  text-decoration: underline;
 }
