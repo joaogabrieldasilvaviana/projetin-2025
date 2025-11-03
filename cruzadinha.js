@@ -5,11 +5,11 @@
  */
 
 // =================================================================
-// Definição da Cruzadinha (Dados do Jogo)
+// 1. DADOS DA CRUZADINHA
 // =================================================================
 
 const CRUZADINHA_DATA = {
-    // 8x8 Grid. 1 = letra, 0 = espaço vazio.
+    // Mapa do grid (1 = letra, 0 = espaço vazio) - 8x8 Grid
     mapa: [
         [1, 1, 1, 1, 1, 1, 0, 0], // 1. LANCAS
         [0, 0, 1, 0, 0, 1, 0, 0], // 6. VALQUIRIA
@@ -32,14 +32,14 @@ const CRUZADINHA_DATA = {
     ]
 };
 
-let solutionGrid;    // Mapa de letras corretas
-let userGrid;        // Mapa de letras digitadas pelo usuário
+let solutionGrid;    // Mapa de letras corretas (gabarito)
+let userGrid;        // Mapa de letras digitadas pelo usuário (progresso)
 let gridElements;    // Referência aos elementos DOM (tiles)
 let currentWordData; // Dados da palavra atualmente focada
 let currentCell;     // Elemento DOM da célula atualmente focada
 
 // =================================================================
-// LÓGICA DE INICIALIZAÇÃO
+// 2. LÓGICA DE INICIALIZAÇÃO
 // =================================================================
 
 function iniciarCruzadinha() {
@@ -58,13 +58,13 @@ function iniciarCruzadinha() {
     const numRows = CRUZADINHA_DATA.mapa.length;
     const numCols = CRUZADINHA_DATA.mapa[0].length;
     
+    // Inicializa grids lógicos
     solutionGrid = initializeGrid(numRows, numCols, '');
     userGrid = initializeGrid(numRows, numCols, '');
     gridElements = initializeGrid(numRows, numCols, null);
 
     // Configura o Grid CSS
     gridContainer.style.gridTemplateColumns = `repeat(${numCols}, 1fr)`;
-    // (O style.css cuida do max-width)
 
     // 1. Monta o Grid, Solução e Números
     buildGridAndSolution(gridContainer, numRows, numCols);
@@ -72,7 +72,7 @@ function iniciarCruzadinha() {
     // 2. Adiciona Dicas
     addClues(cluesAcross, cluesDown);
 
-    // 3. Configura o Input e remove listeners do Termo
+    // 3. Configura o Input e remove listeners do Termo (Garante que só a Cruzadinha está escutando)
     document.removeEventListener('keydown', handleKeyPressCruzadinha);
     document.addEventListener('keydown', handleKeyPressCruzadinha);
     
@@ -92,7 +92,7 @@ function initializeGrid(rows, cols, initialValue) {
 }
 
 function buildGridAndSolution(container, numRows, numCols) {
-    // Popula o solutionGrid
+    // Popula o solutionGrid (Gabarito)
     CRUZADINHA_DATA.palavras.forEach(p => {
         const { palavra, direcao, top, left } = p;
         for (let i = 0; i < palavra.length; i++) {
@@ -112,23 +112,19 @@ function buildGridAndSolution(container, numRows, numCols) {
             tile.classList.add('cruzadinha-tile');
             tile.dataset.row = r;
             tile.dataset.col = c;
-            tile.tabIndex = isWord ? 0 : -1; // Torna células de palavras focáveis
+            tile.tabIndex = isWord ? 0 : -1; 
 
             if (!isWord) {
                 tile.classList.add('blank');
             } else {
                 tile.addEventListener('click', handleTileClick);
-                // Preenche o tile se for uma interseção já preenchida (opcional, mas bom)
-                if (userGrid[r][c] !== '') {
-                    tile.textContent = userGrid[r][c];
-                }
             }
             gridElements[r][c] = tile;
             container.appendChild(tile);
         }
     }
 
-    // Adiciona números após a criação de todos os tiles
+    // Adiciona números (referências para as dicas)
     CRUZADINHA_DATA.palavras.forEach(p => {
         const { id, top, left } = p;
         const numberSpan = document.createElement('span');
@@ -157,11 +153,11 @@ function addClues(cluesAcross, cluesDown) {
 }
 
 // =================================================================
-// LÓGICA DE SELEÇÃO E FOCO
+// 3. LÓGICA DE SELEÇÃO E FOCO
 // =================================================================
 
 function highlightWord(wordData) {
-    // 1. Limpa destaques anteriores (active-word e selected)
+    // 1. Limpa destaques anteriores
     document.querySelectorAll('.cruzadinha-tile').forEach(tile => {
         tile.classList.remove('active-word', 'selected');
     });
@@ -191,7 +187,6 @@ function selectCell(row, col) {
 
     currentCell = gridElements[row][col];
     currentCell.classList.add('selected');
-    // Chama o foco para aceitar o input de teclado
     currentCell.focus(); 
 }
 
@@ -214,11 +209,11 @@ function findWordForCell(r, c, preferredDirection) {
     // Busca todas as palavras que passam por (r, c)
     const candidates = CRUZADINHA_DATA.palavras.filter(p => isCellInWord(p, r, c));
     
-    // Tenta a direção preferida, senão pega a primeira
+    // Tenta a direção preferida
     let selectedWord = candidates.find(p => p.direcao === preferredDirection);
     
+    // Fallback se a direção preferida não estiver lá
     if (!selectedWord && candidates.length > 0) {
-        // Fallback para a primeira candidata se a direção preferida não estiver lá
         selectedWord = candidates[0]; 
     }
     
@@ -240,7 +235,6 @@ function handleTileClick(event) {
         preferredDirection = (currentWordData.direcao === 'across') ? 'down' : 'across';
     }
 
-    // Tenta selecionar a palavra na direção preferida
     wordToSelect = findWordForCell(r, c, preferredDirection);
 
     if (!wordToSelect) {
@@ -264,7 +258,7 @@ function selectWord(id) {
 }
 
 // =================================================================
-// LÓGICA DE INPUT E VERIFICAÇÃO
+// 4. LÓGICA DE INPUT E VERIFICAÇÃO
 // =================================================================
 
 function moveCursor(currentRow, currentCol, direction, step) {
@@ -310,14 +304,17 @@ function moveCursor(currentRow, currentCol, direction, step) {
 
     // 5. Move o foco
     if (gridElements[nextRow] && gridElements[nextRow][nextCol] && 
-        !gridElements[nextRow][nextCol].classList.contains('blank')) {
+        !gridElements[nextRow][nextCol].classList.contains('blank') &&
+        !gridElements[nextRow][nextCol].classList.contains('correct')) { // Não move para tile já correto
         
         selectCell(nextRow, nextCol);
+    } else if (step === 1 && gridElements[nextRow] && gridElements[nextRow][nextCol].classList.contains('correct')) {
+         // Se a próxima célula é correta, tenta avançar mais uma
+        moveCursor(nextRow, nextCol, direction, step);
     }
 }
 
 function handleKeyPressCruzadinha(event) {
-    // Só processa se houver uma célula focada
     if (!currentCell || !currentWordData) return;
     
     const key = event.key.toUpperCase();
@@ -328,23 +325,26 @@ function handleKeyPressCruzadinha(event) {
 
     // Input de Letra
     if (key.length === 1 && key.match(/[A-Z]/)) {
+        event.preventDefault();
         currentCell.textContent = key;
-        userGrid[r][c] = key; // Armazena o valor no grid lógico
+        userGrid[r][c] = key; 
         
-        moveCursor(r, c, direcao, 1); // Move para frente
+        // Move o cursor para frente na direção ativa
+        moveCursor(r, c, direcao, 1); 
 
     } 
     // BACKSPACE
     else if (key === 'BACKSPACE') {
-        event.preventDefault(); // Evita voltar a página
+        event.preventDefault(); 
         
-        // Limpa a célula atual (se estiver vazia, move o cursor para trás)
         if (currentCell.textContent !== '') {
+            // Se a célula atual tem conteúdo, apaga e mantém o foco
             currentCell.textContent = '';
             userGrid[r][c] = '';
         } else {
-            moveCursor(r, c, direcao, -1); // Move para trás e apaga na próxima tecla
-            // Tenta apagar a letra da célula anterior
+            // Se a célula está vazia, move para trás
+            moveCursor(r, c, direcao, -1); 
+            // Apaga a letra da célula anterior (agora currentCell)
             const prevR = parseInt(currentCell.dataset.row);
             const prevC = parseInt(currentCell.dataset.col);
             currentCell.textContent = '';
@@ -355,11 +355,6 @@ function handleKeyPressCruzadinha(event) {
     // ENTER (Força a verificação)
     else if (event.key === 'Enter') {
         checkWordCompletion();
-    }
-    
-    // Previne o comportamento padrão (exceto Enter)
-    if (key.match(/[A-Z]/) || key === 'BACKSPACE') {
-        event.preventDefault();
     }
 }
 
@@ -380,7 +375,6 @@ function checkWordCompletion() {
     if (palpite.length === palavra.length && !palpite.includes('')) {
         // Palavra completa
         if (palpite === palavra) {
-            
             if (typeof showMessage === 'function') {
                 showMessage(`✅ Palavra ${id} (${palavra}) correta!`, "green-glow");
             }
@@ -392,6 +386,8 @@ function checkWordCompletion() {
                 showMessage(`❌ Palavra ${id} incorreta. Tente novamente!`, "royal-blue-light");
             }
         }
+    } else {
+        showMessage("Preencha a palavra inteira para verificar.", "royal-blue");
     }
 }
 
@@ -404,20 +400,26 @@ function lockCorrectWord(top, left, direcao, length) {
         
         const tile = gridElements[r][c];
         tile.classList.add('correct'); 
-        tile.classList.remove('active-word');
+        tile.classList.remove('active-word', 'selected');
         tile.removeEventListener('click', handleTileClick);
-        tile.tabIndex = -1; // Desabilita o foco
+        tile.tabIndex = -1; 
     }
+    // Remove o foco, pois a palavra está completa
+    currentCell = null;
+    currentWordData = null;
 }
 
 function checkGameEnd() {
-    // Verifica se todos os tiles de palavras estão corretos
+    // Conta os tiles que fazem parte de alguma palavra
     const totalWordTiles = document.querySelectorAll('.cruzadinha-tile:not(.blank)').length;
+    // Conta os tiles que foram marcados como corretos
     const correctTiles = document.querySelectorAll('.cruzadinha-tile.correct').length;
 
     if (correctTiles === totalWordTiles) {
         if (typeof showMessage === 'function') {
             showMessage("🏆 CONQUISTA REAL! Cruzadinha Completa!", "gold");
         }
+        // Remove o listener de teclado para encerrar o jogo
+        document.removeEventListener('keydown', handleKeyPressCruzadinha);
     }
 }
