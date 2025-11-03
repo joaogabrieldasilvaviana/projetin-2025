@@ -1,0 +1,402 @@
+/* ===============================================
+   👑 CLASHTERMO ROYALE ARCADE - STYLE.CSS
+   Tema: Azul Royal e Dourado (Inspirado em Clash Royale)
+   =============================================== */
+
+/* ===== FONTES E CORES (VARS) ===== */
+:root {
+    /* Cores Temáticas */
+    --royal-blue: #0040ff;
+    --royal-blue-dark: #0a1c4b;
+    --royal-blue-light: #1e4fff;
+    --gold: #ffcc00;
+    --gold-dark: #b38b00;
+    --silver: #cfcfcf;
+    --dark-bg: #0d0f1c;
+    --tile-empty: #2b2f3b; /* Fundo do tile não digitado */
+    --text-light: #f4f4f4;
+    
+    /* Cores de Estado */
+    --green-glow: #4cff79; /* Correto / Acerto */
+    --yellow-glow: #ffcc00; /* Posição Errada / Par */
+    --wrong-key: #30344c; /* Tecla/Tile Incorreto */
+    
+    --transition: 0.3s ease-in-out;
+    font-family: 'Rajdhani', sans-serif;
+}
+
+/* ===== RESET E BASE DO BODY/CONTAINER ===== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    /* Gradiente de fundo temático */
+    background: radial-gradient(circle at top, #1a2c6f, #0b0e1d);
+    color: var(--text-light);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 30px; /* Mais espaço nas bordas */
+}
+
+.game-container {
+    width: 100%;
+    max-width: 700px; /* AUMENTADO para dar mais impacto visual */
+    padding: 2.5rem 2rem; 
+    text-align: center;
+    
+    /* Estilo de placa Royale */
+    background: linear-gradient(180deg, #0f1a3a 0%, #0a0e1d 100%);
+    border: 4px solid var(--gold); /* Borda mais grossa */
+    border-radius: 25px; 
+    /* Sombra mais dramática */
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.8), inset 0 0 20px #1a1f3d; 
+    position: relative;
+}
+
+/* ===== COROAS (Decoração) ===== */
+.game-container::before,
+.game-container::after {
+    content: "👑";
+    position: absolute;
+    font-size: 2.5rem; /* Coroa maior */
+    color: var(--gold);
+    top: -25px; /* Mais para fora */
+    text-shadow: 0 0 10px var(--gold-dark);
+    z-index: 10;
+}
+.game-container::before { left: 25px; }
+.game-container::after { right: 25px; }
+
+/* ===== CABEÇALHO E TÍTULOS ===== */
+header h1 {
+    color: var(--gold);
+    text-shadow: 0 0 15px var(--gold-dark), 0 0 5px rgba(255, 255, 255, 0.25);
+    font-size: 3.2rem; /* Título maior */
+    margin-bottom: 0.5rem;
+    letter-spacing: 2px;
+}
+
+.subtitle {
+    font-size: 1.3rem;
+    color: var(--silver);
+    text-shadow: 0 0 5px #000;
+}
+
+.section-title {
+    color: var(--royal-blue-light);
+    margin: 1.5rem 0 1rem;
+    font-size: 2.2rem;
+    text-shadow: 0 0 8px #000;
+}
+
+/* ===== 1. NAVEGAÇÃO / MENU DE JOGOS (Botões Maiores) ===== */
+.royale-menu {
+    display: flex;
+    justify-content: center;
+    gap: 15px; 
+    margin: 2.5rem 0 3rem 0; 
+}
+
+.menu-btn {
+    background: linear-gradient(180deg, #1a2a60, #101633);
+    border: 3px solid #2d3a6b; /* Borda mais grossa */
+    color: var(--silver);
+    padding: 0.8rem 1.5rem; /* AUMENTADO */
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 1.1rem; /* AUMENTADO */
+    cursor: pointer;
+    transition: var(--transition);
+    flex-grow: 1;
+    max-width: 200px;
+    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.6), 0 5px 10px rgba(0, 0, 0, 0.4);
+}
+
+.menu-btn:hover {
+    background: linear-gradient(180deg, var(--royal-blue), var(--royal-blue-dark));
+    color: #fff;
+    transform: translateY(-3px);
+}
+
+.menu-btn.active {
+    background: linear-gradient(180deg, var(--gold), var(--gold-dark));
+    color: var(--royal-blue-dark);
+    border-color: var(--gold);
+    box-shadow: 0 0 20px var(--gold-dark);
+    transform: scale(1.05);
+}
+
+/* Esconder e Mostrar Seções */
+.game-section {
+    display: none;
+    padding-top: 1rem;
+}
+
+.game-section.active {
+    display: block;
+}
+
+/* =============================================
+   2. TERMO ROYALE 
+   ============================================= */
+
+.board {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem; 
+    margin: 2rem auto;
+    justify-content: center;
+    align-items: center;
+}
+
+.row {
+    display: grid;
+    gap: 0.4rem;
+    position: relative;
+    transition: 0.3s;
+    margin: 0 auto;
+    width: 100%;
+    justify-content: center;
+}
+
+/* Configuração de Largura do Grid (Tiles ligeiramente maiores) */
+.row.word-length-5 { grid-template-columns: repeat(5, 1fr); max-width: 375px; }
+.row.word-length-6 { grid-template-columns: repeat(6, 1fr); max-width: 450px; }
+.row.word-length-7 { grid-template-columns: repeat(7, 1fr); max-width: 525px; }
+
+.tile {
+    width: 65px;
+    height: 65px; 
+    background: linear-gradient(180deg, #1a2a60, #101633);
+    border: 3px solid #2d3a6b; /* Borda mais grossa */
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2.2rem; /* Fonte maior */
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-light);
+    transition: var(--transition);
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.6), 0 5px 10px rgba(0, 0, 0, 0.4);
+}
+
+/* Estados das Letras */
+.tile.correct, .key.correct {
+    background: linear-gradient(180deg, #38b14a, #1d722a);
+    border-color: #49e65c;
+    box-shadow: 0 0 15px rgba(73, 230, 92, 0.7);
+}
+
+.tile.wrong-place, .key.wrong-place {
+    background: linear-gradient(180deg, #c9a00a, #7d6103);
+    border-color: var(--gold);
+    box-shadow: 0 0 15px rgba(255, 204, 0, 0.7);
+}
+
+.tile.wrong, .key.wrong {
+    background: linear-gradient(180deg, var(--wrong-key), #1c1f30);
+    border-color: #444;
+    opacity: 0.7;
+}
+
+/* Animações (mantidas do original) */
+.tile.flip { animation: flip 0.3s forwards; }
+@keyframes flip {
+    0% { transform: rotateX(0deg); } 50% { transform: rotateX(90deg); color: transparent; }
+    100% { transform: rotateX(0deg); color: var(--text-light); }
+}
+.correct-row { animation: glowGreen 1.5s ease forwards; }
+@keyframes glowGreen {
+    0% { transform: scale(1); box-shadow: 0 0 0px var(--green-glow); }
+    50% { transform: scale(1.03); box-shadow: 0 0 25px var(--green-glow); }
+    100% { transform: scale(1); box-shadow: 0 0 25px var(--green-glow); }
+}
+
+/* Teclado (Botões Maiores) */
+.keyboard {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.6rem; /* Mais espaçamento */
+    margin-top: 1.5rem;
+}
+
+.key {
+    background: linear-gradient(180deg, #24337a, #0f1943);
+    color: var(--text-light);
+    border: 2px solid #3b4b9a;
+    border-radius: 10px; /* Bordas mais suaves */
+    padding: 0.8rem 1rem; /* AUMENTADO */
+    font-weight: bold;
+    font-size: 1.2rem; /* AUMENTADO */
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.6), 0 4px 8px rgba(0, 0, 0, 0.4);
+    min-width: 45px; /* Garante tamanho mínimo */
+}
+
+.key-large {
+    padding: 0.8rem 1.8rem;
+    font-size: 1.1rem;
+}
+.key-spacer {
+    width: 0.8rem;
+}
+
+/* Popup de Mensagem (mantido) */
+.popup {
+    position: fixed;
+    top: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(90deg, var(--royal-blue), var(--royal-blue-light));
+    color: white;
+    padding: 0.8rem 1.2rem;
+    border-radius: 8px;
+    font-weight: bold;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5), 0 0 10px var(--gold-dark);
+    border: 2px solid var(--gold);
+    animation: fadeOut 2.5s forwards;
+    z-index: 1000;
+}
+@keyframes fadeOut { 0% { opacity: 1; } 80% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -20px); } }
+
+/* =============================================
+   3. CRUZADINHA MESTRA
+   ============================================= */
+
+.cruzadinha-info {
+    color: var(--silver);
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+}
+
+.cruzadinha-tile {
+    width: 38px; /* Ligeiramente maior */
+    height: 38px;
+    border: 1px solid var(--royal-blue-dark);
+    background-color: var(--tile-empty);
+    color: var(--text-light);
+    font-size: 1.3rem;
+    border-radius: 4px; /* Leve arredondamento */
+}
+
+.cruzadinha-tile.active-word {
+    background-color: var(--royal-blue-light);
+}
+
+.cruzadinha-tile.selected {
+    background-color: var(--gold);
+    color: var(--royal-blue-dark);
+    border-color: var(--gold);
+    box-shadow: inset 0 0 5px var(--royal-blue-dark);
+}
+
+.cruzadinha-tile.correct {
+    background-color: #1d722a; /* Verde mais escuro para a cruzadinha */
+    border-color: #49e65c;
+    color: white;
+    box-shadow: 0 0 5px rgba(73, 230, 92, 0.7);
+}
+
+.cruzadinha-clues {
+    text-align: left;
+    margin-top: 2rem;
+    justify-content: space-around;
+    gap: 2rem;
+    /* Faz as dicas se encaixarem melhor no container maior */
+    display: flex; 
+    flex-wrap: wrap; 
+}
+
+/* =============================================
+   4. MEMÓRIA DE BATALHA
+   ============================================= */
+
+.memory-grid {
+    grid-template-columns: repeat(4, 1fr); 
+    gap: 15px; /* Mais espaçamento entre os cards */
+    max-width: 500px; /* Mantém o grid bem formatado */
+    padding: 15px;
+    border: 2px dashed var(--royal-blue-dark);
+    border-radius: 15px;
+}
+
+.memory-card {
+    height: 110px; /* AUMENTADO */
+    max-height: 110px;
+}
+
+.card-back {
+    border: 4px solid var(--gold); /* Borda da carta mais visível */
+    font-size: 3.5rem;
+}
+
+.memory-stats {
+    margin-top: 1.5rem;
+    font-size: 1.2rem;
+}
+
+/* ===== 5. RESPONSIVIDADE GERAL ===== */
+
+/* Telas menores que 650px (Ajuste para tablets pequenos e celulares) */
+@media (max-width: 650px) {
+    .game-container {
+        padding: 1.5rem 1rem;
+    }
+    header h1 {
+        font-size: 2.5rem;
+    }
+    .royale-menu {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .menu-btn {
+        max-width: 100%;
+        font-size: 1rem;
+        padding: 0.7rem 1rem;
+    }
+
+    /* Ajustes do Termo para caber */
+    .row.word-length-5, .row.word-length-6, .row.word-length-7 { 
+        gap: 0.3rem; 
+    }
+    .tile { width: 45px; height: 45px; font-size: 1.5rem; }
+    .row.word-length-5 { max-width: 250px; }
+    .row.word-length-6 { max-width: 300px; }
+    .row.word-length-7 { max-width: 350px; }
+
+    /* Ajuste do Teclado */
+    .keyboard { gap: 0.4rem; }
+    .key { padding: 0.5rem 0.6rem; font-size: 0.9rem; min-width: 35px; }
+    .key-large { padding: 0.5rem 1rem; }
+    .key-spacer { width: 0.5rem; }
+
+    /* Ajuste da Memória */
+    .memory-grid {
+        gap: 8px;
+        max-width: 350px; 
+    }
+    .memory-card {
+        height: 75px; 
+    }
+    .card-back {
+        font-size: 2.5rem;
+    }
+    
+    /* Ajuste da Cruzadinha */
+    .cruzadinha-tile {
+        width: 30px; 
+        height: 30px;
+        font-size: 1rem;
+    }
+}
