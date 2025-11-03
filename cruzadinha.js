@@ -1,43 +1,42 @@
 /**
  * ⚔️ CRUZADINHA MESTRA - CÓDIGO FINAL E FUNCIONAL
- * Este arquivo gerencia a lógica de montagem, seleção, input e verificação da cruzadinha.
- * DEPENDÊNCIA: Assume que a função showMessage(message, colorClass) está definida em termo.js.
+ * Gerencia a lógica de montagem, seleção de palavras, input e verificação.
+ * DEPENDÊNCIA: Depende da função showMessage() definida em termo.js.
  */
 
 // =================================================================
-// Definição da Cruzadinha
+// Definição da Cruzadinha (Dados do Jogo)
 // =================================================================
 
-const CRUZADINHA_DATA_REFATORADA = {
+const CRUZADINHA_DATA = {
     // 8x8 Grid. 1 = letra, 0 = espaço vazio.
     mapa: [
-        [1, 1, 1, 1, 1, 1, 0, 0], // 1. LANCAS (Across)
-        [0, 0, 1, 0, 0, 1, 0, 0], // 6. VALQUIRIA (Down)
-        [0, 1, 1, 1, 1, 1, 1, 1], // 2. ELIXIR (Across)
-        [0, 1, 0, 1, 0, 0, 0, 1], // 5. GOLEM (Down), 8. PEKKA (Down)
-        [1, 1, 1, 1, 0, 0, 0, 1], // 3. ARQUEIRA (Across), 4. OURO (Down)
+        [1, 1, 1, 1, 1, 1, 0, 0], // 1. LANCAS
+        [0, 0, 1, 0, 0, 1, 0, 0], // 6. VALQUIRIA
+        [0, 1, 1, 1, 1, 1, 1, 1], // 2. ELIXIR, 7. TORRE
+        [0, 1, 0, 1, 0, 0, 0, 1], // 5. GOLEM, 8. PEKKA, 4. OURO
+        [1, 1, 1, 1, 0, 0, 0, 1], // 3. ARQUEIRA
         [0, 1, 0, 1, 0, 0, 0, 1],
         [0, 1, 0, 1, 0, 0, 0, 1],
         [0, 1, 0, 0, 0, 0, 0, 0]
     ],
-    // Dicionário de palavras e suas posições (top, left). A palavra deve estar em MAIÚSCULAS.
     palavras: [
         { id: 1, palavra: "LANCAS", dica: "Usadas pelo Goblin, são afiadas.", direcao: "across", top: 0, left: 0 },
-        { id: 5, palavra: "GOLEM", dica: "Tank gigante de pedra que explode.", direcao: "down", top: 0, left: 2 },
-        { id: 2, palavra: "ELIXIR", dica: "Recurso roxo necessário para jogar cartas.", direcao: "across", top: 2, left: 1 },
-        { id: 3, palavra: "ARQUEIRA", dica: "Unidade de longa distância (Horizontal).", direcao: "across", top: 4, left: 0 },
         { id: 6, palavra: "VALQUIRIA", dica: "Guerreira de cabelo laranja com machado.", direcao: "down", top: 0, left: 1 },
-        { id: 4, palavra: "OURO", dica: "Moeda para upgrades (Vertical).", direcao: "down", top: 3, left: 7 },
-        { id: 7, palavra: "TORRE", dica: "Defesa Principal (Vertical).", direcao: "down", top: 2, left: 5 },
-        { id: 8, palavra: "PEKKA", dica: "Cavaleiro pesado de armadura (Vertical).", direcao: "down", top: 3, left: 3 }
+        { id: 5, palavra: "GOLEM", dica: "Tank gigante de pedra que explode.", direcao: "down", top: 0, left: 2 },
+        { id: 7, palavra: "TORRE", dica: "Defesa Principal.", direcao: "down", top: 2, left: 5 },
+        { id: 2, palavra: "ELIXIR", dica: "Recurso roxo necessário para jogar cartas.", direcao: "across", top: 2, left: 1 },
+        { id: 8, palavra: "PEKKA", dica: "Cavaleiro pesado de armadura.", direcao: "down", top: 3, left: 3 },
+        { id: 3, palavra: "ARQUEIRA", dica: "Unidade de longa distância (Horizontal).", direcao: "across", top: 4, left: 0 },
+        { id: 4, palavra: "OURO", dica: "Moeda para upgrades (Vertical).", direcao: "down", top: 3, left: 7 }
     ]
 };
 
-let solutionGrid;    
-let userGrid;        
-let gridElements;    
-let currentWordData; 
-let currentCell;     
+let solutionGrid;    // Mapa de letras corretas
+let userGrid;        // Mapa de letras digitadas pelo usuário
+let gridElements;    // Referência aos elementos DOM (tiles)
+let currentWordData; // Dados da palavra atualmente focada
+let currentCell;     // Elemento DOM da célula atualmente focada
 
 // =================================================================
 // LÓGICA DE INICIALIZAÇÃO
@@ -49,25 +48,31 @@ function iniciarCruzadinha() {
     const cluesAcross = document.getElementById('clues-across');
     const cluesDown = document.getElementById('clues-down');
     
+    // Limpa a tela e reinicia estados
     gridContainer.innerHTML = '';
     cluesAcross.innerHTML = '';
     cluesDown.innerHTML = '';
     currentCell = null;
     currentWordData = null;
 
-    const numRows = CRUZADINHA_DATA_REFATORADA.mapa.length;
-    const numCols = CRUZADINHA_DATA_REFATORADA.mapa[0].length;
+    const numRows = CRUZADINHA_DATA.mapa.length;
+    const numCols = CRUZADINHA_DATA.mapa[0].length;
     
     solutionGrid = initializeGrid(numRows, numCols, '');
     userGrid = initializeGrid(numRows, numCols, '');
     gridElements = initializeGrid(numRows, numCols, null);
 
+    // Configura o Grid CSS
     gridContainer.style.gridTemplateColumns = `repeat(${numCols}, 1fr)`;
-    gridContainer.style.maxWidth = `${numCols * 38}px`;
+    // (O style.css cuida do max-width)
 
+    // 1. Monta o Grid, Solução e Números
     buildGridAndSolution(gridContainer, numRows, numCols);
+
+    // 2. Adiciona Dicas
     addClues(cluesAcross, cluesDown);
 
+    // 3. Configura o Input e remove listeners do Termo
     document.removeEventListener('keydown', handleKeyPressCruzadinha);
     document.addEventListener('keydown', handleKeyPressCruzadinha);
     
@@ -87,9 +92,9 @@ function initializeGrid(rows, cols, initialValue) {
 }
 
 function buildGridAndSolution(container, numRows, numCols) {
-    // 1. Popula a solução (solutionGrid)
-    CRUZADINHA_DATA_REFATORADA.palavras.forEach(p => {
-        const { id, palavra, direcao, top, left } = p;
+    // Popula o solutionGrid
+    CRUZADINHA_DATA.palavras.forEach(p => {
+        const { palavra, direcao, top, left } = p;
         for (let i = 0; i < palavra.length; i++) {
             let r = top;
             let c = left;
@@ -99,20 +104,21 @@ function buildGridAndSolution(container, numRows, numCols) {
         }
     });
 
-    // 2. Cria os elementos DOM (Tiles)
+    // Cria os Tiles DOM
     for (let r = 0; r < numRows; r++) {
         for (let c = 0; c < numCols; c++) {
-            const isWord = CRUZADINHA_DATA_REFATORADA.mapa[r][c] === 1;
+            const isWord = CRUZADINHA_DATA.mapa[r][c] === 1;
             const tile = document.createElement('div');
             tile.classList.add('cruzadinha-tile');
             tile.dataset.row = r;
             tile.dataset.col = c;
-            tile.tabIndex = isWord ? 0 : -1;
+            tile.tabIndex = isWord ? 0 : -1; // Torna células de palavras focáveis
 
             if (!isWord) {
                 tile.classList.add('blank');
             } else {
                 tile.addEventListener('click', handleTileClick);
+                // Preenche o tile se for uma interseção já preenchida (opcional, mas bom)
                 if (userGrid[r][c] !== '') {
                     tile.textContent = userGrid[r][c];
                 }
@@ -122,8 +128,8 @@ function buildGridAndSolution(container, numRows, numCols) {
         }
     }
 
-    // 3. Adiciona números nas células iniciais
-    CRUZADINHA_DATA_REFATORADA.palavras.forEach(p => {
+    // Adiciona números após a criação de todos os tiles
+    CRUZADINHA_DATA.palavras.forEach(p => {
         const { id, top, left } = p;
         const numberSpan = document.createElement('span');
         numberSpan.classList.add('cruzadinha-tile-number');
@@ -136,7 +142,7 @@ function buildGridAndSolution(container, numRows, numCols) {
 }
 
 function addClues(cluesAcross, cluesDown) {
-    CRUZADINHA_DATA_REFATORADA.palavras.forEach(p => {
+    CRUZADINHA_DATA.palavras.forEach(p => {
         const li = document.createElement('li');
         li.textContent = `${p.id}. ${p.dica}`;
         li.dataset.wordId = p.id;
@@ -155,11 +161,14 @@ function addClues(cluesAcross, cluesDown) {
 // =================================================================
 
 function highlightWord(wordData) {
+    // 1. Limpa destaques anteriores (active-word e selected)
     document.querySelectorAll('.cruzadinha-tile').forEach(tile => {
         tile.classList.remove('active-word', 'selected');
     });
 
+    // 2. Destaca a nova palavra
     const { palavra, direcao, top, left } = wordData;
+
     for (let i = 0; i < palavra.length; i++) {
         let r = top;
         let c = left;
@@ -170,15 +179,19 @@ function highlightWord(wordData) {
             gridElements[r][c].classList.add('active-word');
         }
     }
+
     currentWordData = wordData;
 }
 
 function selectCell(row, col) {
+    // Desfoca a célula anterior
     if (currentCell) {
         currentCell.classList.remove('selected');
     }
+
     currentCell = gridElements[row][col];
     currentCell.classList.add('selected');
+    // Chama o foco para aceitar o input de teclado
     currentCell.focus(); 
 }
 
@@ -198,18 +211,17 @@ function isCellInWord(wordData, r, c) {
 }
 
 function findWordForCell(r, c, preferredDirection) {
-    const candidates = CRUZADINHA_DATA_REFATORADA.palavras.filter(p => isCellInWord(p, r, c));
+    // Busca todas as palavras que passam por (r, c)
+    const candidates = CRUZADINHA_DATA.palavras.filter(p => isCellInWord(p, r, c));
+    
+    // Tenta a direção preferida, senão pega a primeira
     let selectedWord = candidates.find(p => p.direcao === preferredDirection);
     
     if (!selectedWord && candidates.length > 0) {
-        // Tenta a direção oposta se a preferida não funcionar
-        const oppositeDirection = (preferredDirection === 'across') ? 'down' : 'across';
-        selectedWord = candidates.find(p => p.direcao === oppositeDirection);
-    }
-    
-    if (!selectedWord && candidates.length > 0) {
+        // Fallback para a primeira candidata se a direção preferida não estiver lá
         selectedWord = candidates[0]; 
     }
+    
     return selectedWord;
 }
 
@@ -220,14 +232,22 @@ function handleTileClick(event) {
     const r = parseInt(tile.dataset.row);
     const c = parseInt(tile.dataset.col);
     
-    let preferredDirection = 'across'; 
+    let preferredDirection = 'across'; // Padrão
+    let wordToSelect;
 
+    // Se já há uma palavra ativa e a célula clicada pertence a ela, tenta alternar a direção
     if (currentWordData && isCellInWord(currentWordData, r, c)) {
-        // Alterna direção se a célula já está na palavra ativa
         preferredDirection = (currentWordData.direcao === 'across') ? 'down' : 'across';
     }
 
-    const wordToSelect = findWordForCell(r, c, preferredDirection);
+    // Tenta selecionar a palavra na direção preferida
+    wordToSelect = findWordForCell(r, c, preferredDirection);
+
+    if (!wordToSelect) {
+        // Se a preferida falhou, tenta a direção oposta como último recurso
+        const fallbackDirection = (preferredDirection === 'across') ? 'down' : 'across';
+        wordToSelect = findWordForCell(r, c, fallbackDirection);
+    }
 
     if (wordToSelect) {
         highlightWord(wordToSelect);
@@ -236,7 +256,7 @@ function handleTileClick(event) {
 }
 
 function selectWord(id) {
-    const wordData = CRUZADINHA_DATA_REFATORADA.palavras.find(p => p.id === id);
+    const wordData = CRUZADINHA_DATA.palavras.find(p => p.id === id);
     if (wordData) {
         highlightWord(wordData);
         selectCell(wordData.top, wordData.left); 
@@ -248,8 +268,11 @@ function selectWord(id) {
 // =================================================================
 
 function moveCursor(currentRow, currentCol, direction, step) {
+    if (!currentWordData) return;
+    
     const { palavra, top, left } = currentWordData;
     
+    // 1. Encontra o índice da célula atual dentro da palavra ativa
     let currentIndex = -1;
     for (let i = 0; i < palavra.length; i++) {
         let pr = top;
@@ -265,11 +288,17 @@ function moveCursor(currentRow, currentCol, direction, step) {
 
     if (currentIndex === -1) return;
 
+    // 2. Calcula o próximo índice
     let nextIndex = currentIndex + step;
+    
+    // 3. Verifica limites
     if (nextIndex < 0 || nextIndex >= palavra.length) {
+        // Se for ENTER e estamos no final, verifica a palavra
+        if (step === 1) checkWordCompletion();
         return; 
     }
 
+    // 4. Calcula a próxima posição (r, c)
     let nextRow = top;
     let nextCol = left;
 
@@ -279,6 +308,7 @@ function moveCursor(currentRow, currentCol, direction, step) {
         nextRow = top + nextIndex;
     }
 
+    // 5. Move o foco
     if (gridElements[nextRow] && gridElements[nextRow][nextCol] && 
         !gridElements[nextRow][nextCol].classList.contains('blank')) {
         
@@ -287,6 +317,7 @@ function moveCursor(currentRow, currentCol, direction, step) {
 }
 
 function handleKeyPressCruzadinha(event) {
+    // Só processa se houver uma célula focada
     if (!currentCell || !currentWordData) return;
     
     const key = event.key.toUpperCase();
@@ -295,27 +326,39 @@ function handleKeyPressCruzadinha(event) {
     const c = parseInt(currentCell.dataset.col);
     const { direcao } = currentWordData;
 
+    // Input de Letra
     if (key.length === 1 && key.match(/[A-Z]/)) {
         currentCell.textContent = key;
-        userGrid[r][c] = key;
+        userGrid[r][c] = key; // Armazena o valor no grid lógico
         
-        moveCursor(r, c, direcao, 1);
-        checkWordCompletion();
+        moveCursor(r, c, direcao, 1); // Move para frente
 
-    } else if (key === 'BACKSPACE') {
-        // Limpa a célula atual
-        currentCell.textContent = '';
-        userGrid[r][c] = '';
+    } 
+    // BACKSPACE
+    else if (key === 'BACKSPACE') {
+        event.preventDefault(); // Evita voltar a página
         
-        // Move para a célula anterior
-        moveCursor(r, c, direcao, -1);
-        
-    } else if (event.key === 'Enter') {
+        // Limpa a célula atual (se estiver vazia, move o cursor para trás)
+        if (currentCell.textContent !== '') {
+            currentCell.textContent = '';
+            userGrid[r][c] = '';
+        } else {
+            moveCursor(r, c, direcao, -1); // Move para trás e apaga na próxima tecla
+            // Tenta apagar a letra da célula anterior
+            const prevR = parseInt(currentCell.dataset.row);
+            const prevC = parseInt(currentCell.dataset.col);
+            currentCell.textContent = '';
+            userGrid[prevR][prevC] = '';
+        }
+
+    } 
+    // ENTER (Força a verificação)
+    else if (event.key === 'Enter') {
         checkWordCompletion();
     }
     
-    // Previne o comportamento padrão (ex: scroll em Backspace)
-    if (key.match(/[A-Z]/) || key === 'BACKSPACE' || key === 'Enter') {
+    // Previne o comportamento padrão (exceto Enter)
+    if (key.match(/[A-Z]/) || key === 'BACKSPACE') {
         event.preventDefault();
     }
 }
@@ -324,6 +367,7 @@ function checkWordCompletion() {
     const { palavra, top, left, direcao, id } = currentWordData;
     let palpite = '';
 
+    // Monta o palpite atual
     for (let i = 0; i < palavra.length; i++) {
         let r = top;
         let c = left;
@@ -337,7 +381,6 @@ function checkWordCompletion() {
         // Palavra completa
         if (palpite === palavra) {
             
-            // Verifica se a função showMessage existe antes de usar (dependência do termo.js)
             if (typeof showMessage === 'function') {
                 showMessage(`✅ Palavra ${id} (${palavra}) correta!`, "green-glow");
             }
@@ -361,17 +404,18 @@ function lockCorrectWord(top, left, direcao, length) {
         
         const tile = gridElements[r][c];
         tile.classList.add('correct'); 
+        tile.classList.remove('active-word');
         tile.removeEventListener('click', handleTileClick);
-        tile.tabIndex = -1; // Desabilita o foco por tab
+        tile.tabIndex = -1; // Desabilita o foco
     }
 }
 
 function checkGameEnd() {
-    // Verifica se todos os tiles de palavras foram marcados como 'correct'
-    const totalTiles = document.querySelectorAll('.cruzadinha-tile:not(.blank)').length;
+    // Verifica se todos os tiles de palavras estão corretos
+    const totalWordTiles = document.querySelectorAll('.cruzadinha-tile:not(.blank)').length;
     const correctTiles = document.querySelectorAll('.cruzadinha-tile.correct').length;
 
-    if (correctTiles === totalTiles) {
+    if (correctTiles === totalWordTiles) {
         if (typeof showMessage === 'function') {
             showMessage("🏆 CONQUISTA REAL! Cruzadinha Completa!", "gold");
         }
