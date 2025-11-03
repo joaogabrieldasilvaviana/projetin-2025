@@ -10,7 +10,7 @@
 // Dicionário de Palavras Temáticas (Clash Royale/Batalha)
 // =================================================================
 const PALAVRAS = {
-    5: ["TERMO", "NOBRE", "TORRE", "FEITI", "LANCE", "MAGIA", "FESTA", "REINO", "VALOR", "COROA"],
+    5: ["TERMO", "NOBRE", "TORRE", "GOLEM", "LANCE", "MAGIA", "FESTA", "REINO", "VALOR", "COROA"],
     6: ["COROA", "ESPADAS", "DRAGAO", "CAVALO", "CLASSE", "REALIZ", "DEFESA", "GOBLIN", "FLECHA"],
     7: ["BATALHA", "IMPÉRIO", "CORAGEM", "VITORIA", "DEFESA", "CONQUISTA", "ARMADURA", "SOLDADO", "PRINCIPE"]
 };
