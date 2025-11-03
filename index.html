@@ -3,111 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ClashTermo Royale - Arena de Jogos</title>
+    <title>ClashTermo Royale - Arcade de Batalha</title>
+    
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css"> 
+    
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <div class="game-container">
+        
         <header>
-            <h1 id="main-title">CLASH ROYALE ARCADE</h1>
-            <p class="subtitle" id="game-subtitle">Selecione seu desafio na Arena!</p>
+            <h1>ClashTermo Royale</h1>
+            <p class="subtitle">O Arcade de Batalha Definitivo</p>
         </header>
 
         <nav class="royale-menu">
-            <button class="menu-btn active" data-game="termo">👑 Termo Royale</button>
+            <button class="menu-btn active" data-game="termo">📝 Termo Royale</button>
             <button class="menu-btn" data-game="cruzadinha">⚔️ Cruzadinha Mestra</button>
-            <button class="menu-btn" data-game="memoria">🧠 Memória de Batalha</button>
+            <button class="menu-btn" data-game="memoria">🃏 Memória de Batalha</button>
         </nav>
 
         <section id="termo-game" class="game-section active">
-            <div class="board">
-                </div>
-            
-            <div class="keyboard">
-                <button class="key" data-key="Q">Q</button>
-                <button class="key" data-key="W">W</button>
-                <button class="key" data-key="E">E</button>
-                <button class="key" data-key="R">R</button>
-                <button class="key" data-key="T">T</button>
-                <button class="key" data-key="Y">Y</button>
-                <button class="key" data-key="U">U</button>
-                <button class="key" data-key="I">I</button>
-                <button class="key" data-key="O">O</button>
-                <button class="key" data-key="P">P</button>
-                
-                <span class="key-spacer"></span> 
-                <button class="key" data-key="A">A</button>
-                <button class="key" data-key="S">S</button>
-                <button class="key" data-key="D">D</button>
-                <button class="key" data-key="F">F</button>
-                <button class="key" data-key="G">G</button>
-                <button class="key" data-key="H">H</button>
-                <button class="key" data-key="J">J</button>
-                <button class="key" data-key="K">K</button>
-                <button class="key" data-key="L">L</button>
-                <span class="key-spacer"></span> 
-
-                <button class="key key-large" data-key="ENTER">ENTER</button>
-                <button class="key" data-key="Z">Z</button>
-                <button class="key" data-key="X">X</button>
-                <button class="key" data-key="C">C</button>
-                <button class="key" data-key="V">V</button>
-                <button class="key" data-key="B">B</button>
-                <button class="key" data-key="N">N</button>
-                <button class="key" data-key="M">M</button>
-                <button class="key key-large" data-key="BACKSPACE">⌫</button>
+            <h2 class="section-title">📝 Termo Royale</h2>
+            <div class="termo-info">
+                <p>Adivinhe a palavra secreta (5 a 7 letras) em 6 tentativas.</p>
             </div>
+
+            <div id="board" class="board">
+                </div>
+
+            <div id="keyboard" class="keyboard">
+                </div>
         </section>
 
-        <section id="cruzadinha-game" class="game-section hidden">
+
+        <section id="cruzadinha-game" class="game-section">
             <h2 class="section-title">⚔️ Cruzadinha Mestra</h2>
-            <div class="cruzadinha-info">
-                 <p>Desafio de vocabulário temático. Use os números para ver as dicas.</p>
-            </div>
+            <p class="cruzadinha-info">Complete a cruzadinha com as tropas e feitiços do Clash Royale.</p>
 
-            <div class="cruzadinha-grid-container">
+            <div class="cruzadinha-layout">
+                <div class="cruzadinha-grid-container grid">
+                    </div>
+
+                <div class="cruzadinha-clues">
+                    <div class="clues-block">
+                        <h3>Horizontal (Across)</h3>
+                        <ol id="clues-across"></ol>
+                    </div>
+                    <div class="clues-block">
+                        <h3>Vertical (Down)</h3>
+                        <ol id="clues-down"></ol>
+                    </div>
                 </div>
-
-            <div class="cruzadinha-clues">
-                <h3>Dicas Horizontais</h3>
-                <ul id="clues-across"></ul>
-                <h3>Dicas Verticais</h3>
-                <ul id="clues-down"></ul>
             </div>
-        </section>
+            </section>
 
-        <section id="memoria-game" class="game-section hidden">
-            <h2 class="section-title">🧠 Memória de Batalha</h2>
-            <div class="memory-info">
-                <p>Encontre os pares de Cartas do Clash Royale! Tente o menor número de movimentos.</p>
-            </div>
-            
-            <div class="memory-grid">
+
+        <section id="memoria-game" class="game-section">
+            <h2 class="section-title">🃏 Memória de Batalha</h2>
+            <p class="memory-info">Encontre os pares das cartas do Clash Royale. </p>
+
+            <div id="memory-grid" class="memory-grid grid">
                 </div>
 
             <div class="memory-stats">
-                <p>Movimentos: <span id="move-count">0</span></p>
-                <button id="reset-memory-btn" class="key key-large">Reiniciar</button>
+                <p>Tentativas: <span id="memory-attempts">0</span></p>
+                <p>Pares Encontrados: <span id="memory-matched">0/8</span></p>
             </div>
         </section>
 
-        <footer>
-            Projeto ClashTermo Royale Arcade | Desenvolvido com 👑 e ⚔️.
-        </footer>
-    </div>
-    
-    <script src="script.js"></script>
-    <script>
-        // Chamadas de inicialização para os scripts
-        document.addEventListener('DOMContentLoaded', () => {
-             // Inicia a navegação e o Jogo do Termo na primeira carga
-             if (typeof iniciarJogo === 'function') { iniciarJogo(); }
-             if (typeof setupNavigation === 'function') { setupNavigation(); }
-             // Outras inicializações de jogos (Cruzadinha e Memória) virão aqui
-        });
-    </script>
-
+    </div> <script src="termo.js"></script>
+    <script src="cruzadinha.js"></script>
+    <script src="memoria.js"></script> 
 </body>
 </html>
