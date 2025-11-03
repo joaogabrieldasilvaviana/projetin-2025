@@ -11,29 +11,32 @@
   --gold-dark: #b38b00;
   --silver: #cfcfcf;
   --dark-bg: #0d0f1c;
-  --tile-empty: #2b2f3b;
+  --tile-empty: #2b2f3b; /* Não usado, mas mantido para referência */
   --text-light: #f4f4f4;
   --green-glow: #4cff79;
   --transition: 0.25s ease;
   font-family: 'Rajdhani', sans-serif;
 }
 
-/* ===== RESET ===== */
+/* ===== RESET E BASE ===== */
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-/* ===== LAYOUT ===== */
 body {
+  /* Gradiente mais profundo */
   background: radial-gradient(circle at top, #1a2c6f, #0b0e1d);
   color: var(--text-light);
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
+  /* Permite rolagem se o conteúdo for muito grande */
+  overflow-y: auto;
   overflow-x: hidden;
+  padding: 20px; /* Garante espaço em telas pequenas */
 }
 
 .game-container {
@@ -41,14 +44,16 @@ body {
   max-width: 520px;
   padding: 1.5rem;
   text-align: center;
+  /* Gradiente de fundo ajustado */
   background: linear-gradient(180deg, #0f1a3a 0%, #0a0e1d 100%);
   border: 3px solid var(--gold);
   border-radius: 20px;
-  box-shadow: 0 0 30px #000a, inset 0 0 15px #1a1f3d;
+  /* Sombra mais destacada */
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.7), inset 0 0 15px #1a1f3d;
   position: relative;
 }
 
-/* ===== COROAS ===== */
+/* ===== COROAS (Sem Alteração) ===== */
 .game-container::before,
 .game-container::after {
   content: "👑";
@@ -61,10 +66,10 @@ body {
 .game-container::before { left: 20px; }
 .game-container::after { right: 20px; }
 
-/* ===== CABEÇALHO ===== */
+/* ===== CABEÇALHO (Sem Alteração) ===== */
 header h1 {
   color: var(--gold);
-  text-shadow: 0 0 15px var(--gold-dark), 0 0 5px #fff4;
+  text-shadow: 0 0 15px var(--gold-dark), 0 0 5px rgba(255, 255, 255, 0.25);
   font-size: 2.8rem;
   margin-bottom: 0.3rem;
   letter-spacing: 1px;
@@ -87,46 +92,40 @@ header h1 {
 }
 
 .row {
-  display: grid; /* Usa grid para melhor controle de colunas */
-  /* grid-template-columns: repeat(5, 1fr);  <-- REMOVIDO para ser dinâmico */
+  display: grid;
   gap: 0.5rem;
   position: relative;
   transition: 0.3s;
   /* Centraliza o grid */
-  margin: 0 auto;
+  margin: 0 auto;
+  /* Define um máximo para a linha ser limitada dentro do container */
+  width: 100%; 
+  justify-content: center;
 }
 
-/* 🎯 CONFIGURAÇÃO PARA PALAVRAS DE TAMANHOS VARIÁVEIS (Adicionado/Ajustado) */
+/* 🎯 CONFIGURAÇÃO REFINADA PARA TAMANHOS VARIÁVEIS */
+/* Ajuste para que o tamanho das colunas seja dinâmico mas dentro de um limite */
 .row.word-length-5 {
-    grid-template-columns: repeat(5, 1fr);
-    max-width: 355px; /* (65px de tile * 5) + (5px de gap * 4) = 345px. Ajuste conforme necessidade */
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    max-width: 355px; /* Mantido para palavras de 5 letras em telas maiores */
 }
 
 .row.word-length-6 {
-    grid-template-columns: repeat(6, 1fr);
-    max-width: 425px; /* (65px de tile * 6) + (5px de gap * 5) = 415px */
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    max-width: 425px;
 }
 
 .row.word-length-7 {
-    grid-template-columns: repeat(7, 1fr);
-    max-width: 495px; /* (65px de tile * 7) + (5px de gap * 6) = 485px */
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    max-width: 495px;
 }
-
-/* Se as palavras forem muito diferentes em tamanho, considere ajustar o tamanho máximo do tile: */
-@media (max-width: 480px) {
-    .tile {
-        width: 50px; /* Reduz um pouco o tamanho do tile em telas menores */
-        height: 50px;
-        font-size: 1.5rem;
-    }
-    /* E reajuste os max-width das linhas aqui, se necessário */
-}
-/* FIM DOS AJUSTES DE TAMANHO */
-
 
 .tile {
+  /* Tamanhos definidos com 'aspect-ratio' para garantir que sejam quadrados */
   width: 65px;
-  height: 65px;
+  height: 65px; 
+  aspect-ratio: 1 / 1; /* Garante que o tile seja um quadrado perfeito */
+  
   background: linear-gradient(180deg, #1a2a60, #101633);
   border: 2px solid #2d3a6b;
   border-radius: 10px;
@@ -138,20 +137,38 @@ header h1 {
   text-transform: uppercase;
   color: var(--text-light);
   transition: var(--transition);
-  box-shadow: inset 0 0 8px #000a, 0 4px 8px #0006;
+  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.6), 0 4px 8px rgba(0, 0, 0, 0.4);
 }
 
-/* ===== ESTADOS DAS LETRAS (Sem alteração) ===== */
+/* MEDIA QUERY PARA MELHOR RESPONSIVIDADE EM TELAS MUITO PEQUENAS */
+@media (max-width: 480px) {
+    .tile {
+        width: 50px; /* Reduz para 50px */
+        height: 50px;
+        font-size: 1.5rem;
+    }
+    /* Adaptação dos max-width das linhas para o novo tamanho do tile:
+       5 letras: (50*5) + (4*5) = 270px
+       6 letras: (50*6) + (5*5) = 325px
+       7 letras: (50*7) + (6*5) = 380px 
+    */
+    .row.word-length-5 { max-width: 270px; }
+    .row.word-length-6 { max-width: 325px; }
+    .row.word-length-7 { max-width: 380px; }
+}
+
+
+/* ===== ESTADOS DAS LETRAS (Sem Alteração na Estilização) ===== */
 .tile.correct {
   background: linear-gradient(180deg, #38b14a, #1d722a);
   border-color: #49e65c;
-  box-shadow: 0 0 15px #49e65c88;
+  box-shadow: 0 0 15px rgba(73, 230, 92, 0.53);
 }
 
 .tile.wrong-place {
   background: linear-gradient(180deg, #c9a00a, #7d6103);
   border-color: var(--gold);
-  box-shadow: 0 0 15px #ffcc0088;
+  box-shadow: 0 0 15px rgba(255, 204, 0, 0.53);
 }
 
 .tile.wrong {
@@ -160,7 +177,7 @@ header h1 {
   opacity: 0.6;
 }
 
-/* ===== DICAS (Sem alteração) ===== */
+/* ===== DICAS (Sem Alteração) ===== */
 .hint {
   grid-column: 1 / -1;
   font-size: 0.9rem;
@@ -176,7 +193,7 @@ header h1 {
   opacity: 1;
 }
 
-/* ===== LINHA DE ACERTO (Sem alteração) ===== */
+/* ===== LINHA DE ACERTO (Sem Alteração) ===== */
 .correct-row {
   animation: glowGreen 1.5s ease forwards;
 }
@@ -196,7 +213,7 @@ header h1 {
   }
 }
 
-/* ===== TECLADO (Sem alteração) ===== */
+/* ===== TECLADO (Sem Alteração) ===== */
 .keyboard {
   display: flex;
   flex-wrap: wrap;
@@ -215,7 +232,7 @@ header h1 {
   text-transform: uppercase;
   cursor: pointer;
   transition: var(--transition);
-  box-shadow: inset 0 0 6px #000a, 0 3px 8px #0007;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.6), 0 3px 8px rgba(0, 0, 0, 0.4);
 }
 
 .key:hover {
@@ -226,10 +243,10 @@ header h1 {
 
 .key:active {
   transform: scale(0.95);
-  box-shadow: inset 0 0 10px #000b;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.7);
 }
 
-/* ===== POPUP DE MENSAGEM (Sem alteração) ===== */
+/* ===== POPUP DE MENSAGEM (Sem Alteração) ===== */
 .popup {
   position: fixed;
   top: 25px;
@@ -240,7 +257,7 @@ header h1 {
   padding: 0.8rem 1.2rem;
   border-radius: 8px;
   font-weight: bold;
-  box-shadow: 0 0 15px #0008, 0 0 10px var(--gold-dark);
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.5), 0 0 10px var(--gold-dark);
   border: 2px solid var(--gold);
   animation: fadeOut 2s forwards;
 }
@@ -251,7 +268,7 @@ header h1 {
   100% { opacity: 0; transform: translate(-50%, -20px); }
 }
 
-/* ===== RODAPÉ (Sem alteração) ===== */
+/* ===== RODAPÉ (Sem Alteração) ===== */
 footer {
   margin-top: 2rem;
   font-size: 0.9rem;
