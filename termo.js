@@ -1,25 +1,23 @@
 /**
  * 👑 CLASHTERMO ROYALE - TERMO.JS
- * Principal Script de Lógica e Navegação.
- * Contém a função de navegação, a lógica do Termo, e a função global showMessage.
+ * Lógica FINAL e Corrigida para a Navegação, showMessage e Jogo Termo.
  */
 
 // =================================================================
-// VARIÁVEIS DO JOGO E DICIONÁRIO
+// 1. VARIÁVEIS DO JOGO E DICIONÁRIO
 // =================================================================
 
 let currentWord = "";
 let currentGuess = 0;
 let wordLength = 5;
 const MAX_GUESSES = 6;
-// Dicionário com 5 letras para simplificar a montagem inicial
 const DICTIONARY = [
     "TORRE", "ARQUE", "GOLEM", "MAGO", "DRAGO", "FLECH", "MINAS", "OURO", "ELIXR", 
     "VALQU", "PEKKA", "BARBA", "PRINC", "CIVIL", "VENCE"
 ];
 
 // =================================================================
-// FUNÇÃO GLOBAL DE MENSAGENS (Usada por todos os jogos)
+// 2. FUNÇÃO GLOBAL DE MENSAGENS
 // =================================================================
 
 function showMessage(message, colorClass = "royal-blue") {
@@ -27,7 +25,6 @@ function showMessage(message, colorClass = "royal-blue") {
     popup.classList.add('popup');
     popup.textContent = message;
     
-    // Aplica a classe de cor para o CSS customizar
     popup.classList.add(colorClass); 
     
     document.body.appendChild(popup);
@@ -38,7 +35,7 @@ function showMessage(message, colorClass = "royal-blue") {
 }
 
 // =================================================================
-// LÓGICA DE NAVEGAÇÃO (GARANTIA DO FUNCIONAMENTO DOS BOTÕES)
+// 3. LÓGICA DE NAVEGAÇÃO (BOTÕES)
 // =================================================================
 
 function setupNavigation() {
@@ -49,32 +46,29 @@ function setupNavigation() {
         button.addEventListener('click', () => {
             const selectedGame = button.dataset.game; 
 
-            // 1. Atualiza o estado visual dos botões
+            // Atualiza o estado visual dos botões
             menuButtons.forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
 
-            // 2. Esconde todas as seções de jogo
+            // Esconde todas as seções e mostra a correta
             gameSections.forEach(section => {
                 section.classList.remove('active');
             });
             
-            // 3. Mostra a seção de jogo correta (Usando ID: data-game + '-game')
             const targetSection = document.getElementById(`${selectedGame}-game`); 
-            
             if (targetSection) {
                 targetSection.classList.add('active'); 
-            } else {
-                 console.error(`Seção HTML não encontrada: ${selectedGame}-game`);
             }
             
-            // 4. Inicializa o jogo específico, garantindo a desativação de listeners anteriores
-            
-            // Limpa todos os listeners de teclado para evitar conflito entre Termo e Cruzadinha
+            // Limpa todos os listeners de teclado ANTES de iniciar um novo jogo
             document.removeEventListener('keydown', handleKeyPressTermo);
+            // Verifica se a função da Cruzadinha existe antes de tentar removê-la
             if (typeof handleKeyPressCruzadinha === 'function') {
                 document.removeEventListener('keydown', handleKeyPressCruzadinha);
             }
+            // (Assumimos que o jogo da memória não usa keydown)
             
+            // Inicializa o jogo específico
             switch (selectedGame) {
                 case 'termo':
                     iniciarJogoTermo(); 
@@ -82,15 +76,11 @@ function setupNavigation() {
                 case 'cruzadinha':
                     if (typeof iniciarCruzadinha === 'function') {
                         iniciarCruzadinha(); 
-                    } else {
-                         console.error("Função 'iniciarCruzadinha' não encontrada. Verifique o cruzadinha.js.");
                     }
                     break;
                 case 'memoria':
                     if (typeof iniciarJogoMemoria === 'function') {
                         iniciarJogoMemoria(); 
-                    } else {
-                         console.error("Função 'iniciarJogoMemoria' não encontrada. Verifique o memoria.js.");
                     }
                     break;
             }
@@ -99,23 +89,26 @@ function setupNavigation() {
 }
 
 // =================================================================
-// LÓGICA DO JOGO TERMO ROYALE (O Foco Principal)
+// 4. LÓGICA DO JOGO TERMO ROYALE (O Foco Principal)
 // =================================================================
 
 function iniciarJogoTermo() {
     console.log("Iniciando Jogo Termo...");
-    // Sorteia a palavra
     currentWord = DICTIONARY[Math.floor(Math.random() * DICTIONARY.length)]; 
     currentGuess = 0;
     wordLength = currentWord.length; 
     
+    // Limpa o teclado visual (cores)
+    document.querySelectorAll('#keyboard .key').forEach(key => {
+        key.classList.remove('correct', 'wrong-place', 'wrong');
+    });
+
     buildBoard();
     buildKeyboard();
     
-    // Adiciona o listener do Termo
     document.addEventListener('keydown', handleKeyPressTermo);
     
-    showMessage("Nova partida! Palavra de " + wordLength + " letras.", "gold");
+    showMessage("Nova partida! Palavra de " + wordLength + " letras. Palavra: " + currentWord, "gold"); // Dica para teste
 }
 
 function buildBoard() {
@@ -139,6 +132,7 @@ function buildBoard() {
 }
 
 function buildKeyboard() {
+    // [CÓDIGO buildKeyboard ANTERIORMENTE FORNECIDO, DEVE ESTAR OK]
     const keyboard = document.getElementById('keyboard');
     keyboard.innerHTML = '';
     const layout = [
@@ -184,7 +178,6 @@ function createKey(text, className, container) {
 }
 
 function handleVirtualKeyPress(key) {
-    // Simula o evento do teclado físico para consistência
     const event = {
         key: key,
         preventDefault: () => {}
@@ -192,31 +185,46 @@ function handleVirtualKeyPress(key) {
     handleKeyPressTermo(event);
 }
 
+/**
+ * 💡 REVISÃO FINAL DE INPUT: Lógica de cursor/backspace mais simples e robusta
+ */
 function handleKeyPressTermo(event) {
+    // Não permite input se o jogo acabou
+    if (currentGuess >= MAX_GUESSES) return;
+
     const key = event.key.toUpperCase();
     const currentRow = document.querySelector(`.row[data-row="${currentGuess}"]`);
     if (!currentRow) return;
 
-    let tiles = Array.from(currentRow.querySelectorAll('.tile'));
+    const tiles = Array.from(currentRow.querySelectorAll('.tile'));
+    // Encontra o índice do primeiro tile vazio
     let nextTileIndex = tiles.findIndex(t => t.textContent === '');
-    
-    // Se a linha estiver cheia, define o índice para a última posição
-    if (nextTileIndex === -1) nextTileIndex = wordLength;
 
-    // Lógica para digitar uma letra
+    // Se nextTileIndex é -1, a linha está cheia
+    if (nextTileIndex === -1) nextTileIndex = wordLength; 
+
+    // 1. INPUT DE LETRA (A-Z)
     if (key.length === 1 && key.match(/[A-Z]/)) {
         if (nextTileIndex < wordLength) {
+            event.preventDefault(); // Impede o input nativo no browser
             let tileToFill = tiles[nextTileIndex];
             tileToFill.textContent = key;
             tileToFill.dataset.letter = key;
         }
     } 
-    // Lógica para BACKSPACE
+    // 2. BACKSPACE
     else if (key === 'BACKSPACE') {
         event.preventDefault(); 
         
-        // Se a linha não está cheia, o tile a apagar é o anterior ao nextTileIndex
-        let tileToEraseIndex = (nextTileIndex === wordLength) ? wordLength - 1 : nextTileIndex - 1;
+        let tileToEraseIndex;
+        
+        if (nextTileIndex < wordLength) {
+            // Se a linha não está cheia, apaga o tile anterior ao cursor
+            tileToEraseIndex = nextTileIndex - 1;
+        } else {
+            // Se a linha está cheia, apaga o último tile
+            tileToEraseIndex = wordLength - 1;
+        }
 
         if (tileToEraseIndex >= 0) {
             let tileToErase = tiles[tileToEraseIndex];
@@ -224,7 +232,7 @@ function handleKeyPressTermo(event) {
             delete tileToErase.dataset.letter;
         }
     } 
-    // Lógica para ENTER
+    // 3. ENTER
     else if (key === 'ENTER') {
         event.preventDefault();
         checkGuess(currentRow);
@@ -267,7 +275,7 @@ function checkGuess(rowElement) {
             }
         }
         
-        // Atualiza o estado do teclado (Verde tem prioridade, depois Amarelo, por fim Cinza)
+        // Atualiza o estado do teclado
         const key = guessArray[i];
         if (keyboardUpdates[key] !== 'correct') { 
             if (results[i] === 'correct') {
@@ -291,7 +299,6 @@ function checkGuess(rowElement) {
     Object.keys(keyboardUpdates).forEach(key => {
         const keyElement = document.querySelector(`.key[data-key="${key}"]`);
         if (keyElement) {
-            // Remove classes existentes antes de adicionar a nova
             keyElement.classList.remove('wrong', 'wrong-place', 'correct');
             keyElement.classList.add(keyboardUpdates[key]);
         }
@@ -302,7 +309,7 @@ function checkGuess(rowElement) {
         setTimeout(() => {
             rowElement.classList.add('correct-row');
             showMessage("🎉 Vitória Real! A palavra era " + currentWord + "!", "gold");
-            currentGuess = MAX_GUESSES; // Trava o jogo
+            currentGuess = MAX_GUESSES; 
         }, (wordLength * 150) + 300);
         return;
     }
@@ -317,11 +324,10 @@ function checkGuess(rowElement) {
 }
 
 // =================================================================
-// INICIALIZAÇÃO
+// 5. INICIALIZAÇÃO
 // =================================================================
 
 document.addEventListener('DOMContentLoaded', () => {
     setupNavigation();
-    // Inicia o Termo por padrão
     iniciarJogoTermo(); 
 });
