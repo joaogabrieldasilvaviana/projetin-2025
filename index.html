@@ -3,75 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ClashTermo Royale - Arcade de Batalha</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;700&display=swap" rel="stylesheet">
-    
-    <link rel="stylesheet" href="style.css">
+    <title>ClashTermo Royale + Cruzadinha</title>
+
+    <!-- CSS básico (crie um styles.css ou cole direto em <style>) -->
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-    <div class="game-container">
-        
-        <header>
-            <h1>ClashTermo Royale</h1>
-            <p class="subtitle">O Arcade de Batalha Definitivo</p>
-        </header>
+    <!-- ================= MENU ================= -->
+    <div class="menu-container">
+        <button class="menu-btn active" data-game="termo">⚔ Termo Royale</button>
+        <button class="menu-btn" data-game="cruzadinha">🧩 Cruzadinha</button>
+    </div>
 
-        <nav class="royale-menu">
-            <button class="menu-btn active" data-game="termo">📝 Termo Royale</button>
-            <button class="menu-btn" data-game="cruzadinha">⚔️ Cruzadinha Mestra</button>
-            <button class="menu-btn" data-game="memoria">🃏 Memória de Batalha</button>
-        </nav>
 
-        <section id="termo-game" class="game-section active">
-            <h2 class="section-title">📝 Termo Royale</h2>
-            <div class="termo-info">
-                <p>Adivinhe a palavra secreta (5 a 7 letras) em 6 tentativas.</p>
+    <!-- ================ TERMO ================= -->
+    <section id="termo-game" class="game-section active">
+
+        <h2>TERMO ROYALE</h2>
+
+        <div id="board" class="board"></div>
+
+        <div id="keyboard" class="keyboard"></div>
+
+    </section>
+
+
+    <!-- ============== CRUZADINHA ============== -->
+    <section id="cruzadinha-game" class="game-section">
+
+        <h2>CRUZADINHA MESTRA</h2>
+
+        <div class="cruzadinha-container">
+
+            <!-- GRID PRINCIPAL -->
+            <div class="cruzadinha-grid-container"></div>
+
+            <!-- DICAS -->
+            <div class="clues-container">
+                <h3>Horizontais</h3>
+                <ul id="clues-across"></ul>
+
+                <h3>Verticais</h3>
+                <ul id="clues-down"></ul>
             </div>
+        </div>
 
-            <div id="board" class="board"></div>
-            <div id="keyboard" class="keyboard"></div>
-        </section>
+        <!-- TECLADO DA CRUZADINHA -->
+        <div id="cruzadinha-keyboard"></div>
 
+        <!-- RESET -->
+        <button id="cruz-reset" class="reset-btn">🔁 Reiniciar</button>
 
-        <section id="cruzadinha-game" class="game-section">
-            <h2 class="section-title">⚔️ Cruzadinha Mestra</h2>
-            <p class="cruzadinha-info">Complete a cruzadinha com as tropas e feitiços do Clash Royale.</p>
-
-            <div class="cruzadinha-layout">
-                <div class="cruzadinha-grid-container grid">
-                    </div>
-
-                <div class="cruzadinha-clues">
-                    <div class="clues-block">
-                        <h3>Horizontal (Across)</h3>
-                        <ol id="clues-across"></ol>
-                    </div>
-                    <div class="clues-block">
-                        <h3>Vertical (Down)</h3>
-                        <ol id="clues-down"></ol>
-                    </div>
-                </div>
-            </div>
-        </section>
+    </section>
 
 
-        <section id="memoria-game" class="game-section">
-            <h2 class="section-title">🃏 Memória de Batalha</h2>
-            <p class="memory-info">Encontre os pares das cartas do Clash Royale. </p>
+    <!-- ============ POPUPS DE MENSAGEM =========== -->
+    <div id="popup-container"></div>
 
-            <div id="memory-grid" class="memory-grid grid">
-                </div>
+    <!-- ============ SCRIPTS ============ -->
+    <script src="script.js"></script>
 
-            <div class="memory-stats">
-                <p>Tentativas: <span id="memory-attempts">0</span></p>
-                <p>Pares Encontrados: <span id="memory-matched">0/8</span></p>
-            </div>
-        </section>
-
-    </div> <script src="termo.js"></script>
-    <script src="cruzadinha.js"></script>
-    <script src="memoria.js"></script> 
 </body>
 </html>
