@@ -46,11 +46,9 @@ function setupNavigation() {
         button.addEventListener('click', () => {
             const selectedGame = button.dataset.game; 
 
-            // Atualiza o estado visual dos botões
             menuButtons.forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
 
-            // Esconde todas as seções e mostra a correta
             gameSections.forEach(section => {
                 section.classList.remove('active');
             });
@@ -60,15 +58,11 @@ function setupNavigation() {
                 targetSection.classList.add('active'); 
             }
             
-            // Limpa todos os listeners de teclado ANTES de iniciar um novo jogo
             document.removeEventListener('keydown', handleKeyPressTermo);
-            // Verifica se a função da Cruzadinha existe antes de tentar removê-la
             if (typeof handleKeyPressCruzadinha === 'function') {
                 document.removeEventListener('keydown', handleKeyPressCruzadinha);
             }
-            // (Assumimos que o jogo da memória não usa keydown)
             
-            // Inicializa o jogo específico
             switch (selectedGame) {
                 case 'termo':
                     iniciarJogoTermo(); 
@@ -89,7 +83,7 @@ function setupNavigation() {
 }
 
 // =================================================================
-// 4. LÓGICA DO JOGO TERMO ROYALE (O Foco Principal)
+// 4. LÓGICA DO JOGO TERMO ROYALE
 // =================================================================
 
 function iniciarJogoTermo() {
@@ -98,7 +92,6 @@ function iniciarJogoTermo() {
     currentGuess = 0;
     wordLength = currentWord.length; 
     
-    // Limpa o teclado visual (cores)
     document.querySelectorAll('#keyboard .key').forEach(key => {
         key.classList.remove('correct', 'wrong-place', 'wrong');
     });
@@ -107,8 +100,9 @@ function iniciarJogoTermo() {
     buildKeyboard();
     
     document.addEventListener('keydown', handleKeyPressTermo);
-    
-    showMessage("Nova partida! Palavra de " + wordLength + " letras. Palavra: " + currentWord, "gold"); // Dica para teste
+
+    // ✅ Agora só avisa quantidade de letras, sem revelar a palavra
+    showMessage("Nova partida! Palavra com " + wordLength + " letras!", "gold");
 }
 
 function buildBoard() {
@@ -132,7 +126,6 @@ function buildBoard() {
 }
 
 function buildKeyboard() {
-    // [CÓDIGO buildKeyboard ANTERIORMENTE FORNECIDO, DEVE ESTAR OK]
     const keyboard = document.getElementById('keyboard');
     keyboard.innerHTML = '';
     const layout = [
@@ -185,11 +178,7 @@ function handleVirtualKeyPress(key) {
     handleKeyPressTermo(event);
 }
 
-/**
- * 💡 REVISÃO FINAL DE INPUT: Lógica de cursor/backspace mais simples e robusta
- */
 function handleKeyPressTermo(event) {
-    // Não permite input se o jogo acabou
     if (currentGuess >= MAX_GUESSES) return;
 
     const key = event.key.toUpperCase();
@@ -197,32 +186,25 @@ function handleKeyPressTermo(event) {
     if (!currentRow) return;
 
     const tiles = Array.from(currentRow.querySelectorAll('.tile'));
-    // Encontra o índice do primeiro tile vazio
     let nextTileIndex = tiles.findIndex(t => t.textContent === '');
-
-    // Se nextTileIndex é -1, a linha está cheia
     if (nextTileIndex === -1) nextTileIndex = wordLength; 
 
-    // 1. INPUT DE LETRA (A-Z)
     if (key.length === 1 && key.match(/[A-Z]/)) {
         if (nextTileIndex < wordLength) {
-            event.preventDefault(); // Impede o input nativo no browser
+            event.preventDefault();
             let tileToFill = tiles[nextTileIndex];
             tileToFill.textContent = key;
             tileToFill.dataset.letter = key;
         }
     } 
-    // 2. BACKSPACE
     else if (key === 'BACKSPACE') {
         event.preventDefault(); 
         
         let tileToEraseIndex;
         
         if (nextTileIndex < wordLength) {
-            // Se a linha não está cheia, apaga o tile anterior ao cursor
             tileToEraseIndex = nextTileIndex - 1;
         } else {
-            // Se a linha está cheia, apaga o último tile
             tileToEraseIndex = wordLength - 1;
         }
 
@@ -232,7 +214,6 @@ function handleKeyPressTermo(event) {
             delete tileToErase.dataset.letter;
         }
     } 
-    // 3. ENTER
     else if (key === 'ENTER') {
         event.preventDefault();
         checkGuess(currentRow);
@@ -255,7 +236,6 @@ function checkGuess(rowElement) {
     const results = Array(wordLength).fill(''); 
     const keyboardUpdates = {};
 
-    // 1. Passada: Correto (verde)
     for (let i = 0; i < wordLength; i++) {
         if (guessArray[i] === solution[i]) {
             results[i] = 'correct';
@@ -263,7 +243,6 @@ function checkGuess(rowElement) {
         }
     }
 
-    // 2. Passada: Lugar Errado (amarelo) e Incorreto (cinza)
     for (let i = 0; i < wordLength; i++) {
         if (results[i] === '') {
             const index = solution.indexOf(guessArray[i]);
@@ -275,7 +254,6 @@ function checkGuess(rowElement) {
             }
         }
         
-        // Atualiza o estado do teclado
         const key = guessArray[i];
         if (keyboardUpdates[key] !== 'correct') { 
             if (results[i] === 'correct') {
@@ -288,14 +266,12 @@ function checkGuess(rowElement) {
         }
     }
 
-    // Aplica classes visuais (com animação flip)
     tiles.forEach((tile, index) => {
         setTimeout(() => {
             tile.classList.add(results[index], 'flip');
         }, index * 150); 
     });
 
-    // Atualiza o teclado visualmente
     Object.keys(keyboardUpdates).forEach(key => {
         const keyElement = document.querySelector(`.key[data-key="${key}"]`);
         if (keyElement) {
@@ -304,11 +280,10 @@ function checkGuess(rowElement) {
         }
     });
 
-    // Verifica o resultado final
     if (guess === currentWord) {
         setTimeout(() => {
             rowElement.classList.add('correct-row');
-            showMessage("🎉 Vitória Real! A palavra era " + currentWord + "!", "gold");
+            showMessage("🎉 Vitória Real!", "gold");
             currentGuess = MAX_GUESSES; 
         }, (wordLength * 150) + 300);
         return;
