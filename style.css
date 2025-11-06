@@ -1,413 +1,302 @@
-/* =================================================================
-   1. CONFIGURAÇÕES GLOBAIS E TEMA ROYALE
-   ================================================================= */
-
-:root {
-    /* Cores do Clash Royale */
-    --color-royal-blue: #4a90e2; /* Azul principal */
-    --color-gold: #f5a623;       /* Dourado para destaque */
-    --color-red: #d0021b;        /* Vermelho para erro/derrota */
-    --color-background-dark: #1f1f1f; /* Fundo escuro */
-    --color-tile-default: #555;      /* Cinza escuro para tiles vazios */
-    
-    /* Cores do Termo */
-    --color-correct: #538d4e;     /* Verde para letra certa no lugar certo */
-    --color-wrong-place: #b59f3b; /* Amarelo para letra certa no lugar errado */
-    --color-wrong: #3a3a3c;       /* Cinza para letra errada */
-}
-
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: 'Rajdhani', sans-serif;
-}
+/* ===========================================
+   ✨  ESTILO CLASH ROYALE PREMIUM
+   =========================================== */
 
 body {
-    background-color: var(--color-background-dark);
-    color: #fff;
-    padding: 20px;
-    min-height: 100vh;
-}
-
-.game-container {
-    max-width: 800px;
-    margin: 0 auto;
+    font-family: 'Montserrat', 'Poppins', sans-serif;
+    background: linear-gradient(#0060c7, #003a7a);
+    color: white;
     text-align: center;
-    padding: 20px;
-    border: 5px solid var(--color-gold); /* Borda Dourada do Título */
-    border-radius: 10px;
-    background-color: #2c2c2c;
-    box-shadow: 0 0 20px rgba(245, 166, 35, 0.5);
+    margin: 0;
+    padding: 0;
+    user-select: none;
 }
 
-header h1 {
-    font-size: 3.5em;
-    color: var(--color-gold);
-    text-shadow: 2px 2px 5px #000;
-    margin-bottom: 5px;
-}
-
-.subtitle {
-    font-size: 1.2em;
-    color: var(--color-royal-blue);
-    margin-bottom: 20px;
-}
-
-.section-title {
-    font-size: 2em;
-    color: var(--color-gold);
-    margin-bottom: 15px;
-    border-bottom: 2px solid var(--color-royal-blue);
-    padding-bottom: 5px;
-    display: inline-block;
-}
-
-/* =================================================================
-   2. NAVEGAÇÃO (MENU E BOTÕES)
-   ================================================================= */
-
-.royale-menu {
+/* ===========================================
+   MENU
+   =========================================== */
+.menu-container {
     display: flex;
     justify-content: center;
-    gap: 10px;
-    margin-bottom: 30px;
-    flex-wrap: wrap; /* Garante quebras de linha em telas pequenas */
+    gap: 15px;
+    padding: 15px;
 }
 
 .menu-btn {
-    background-color: var(--color-royal-blue);
-    color: #fff;
-    border: 3px solid #fff;
-    padding: 10px 15px;
-    font-size: 1.1em;
-    font-weight: bold;
+    background: #003a7a;
+    border: 3px solid #ffd700;
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 18px;
     cursor: pointer;
-    border-radius: 8px;
-    transition: all 0.2s;
-    box-shadow: 0 4px #000;
+    color: #fff;
+    text-shadow: 2px 2px #000;
+    transition: 0.2s;
 }
 
 .menu-btn:hover {
-    background-color: #6fa8dc; /* Azul mais claro no hover */
-    transform: translateY(-2px);
-    box-shadow: 0 6px #000;
+    transform: scale(1.05);
 }
 
 .menu-btn.active {
-    background-color: var(--color-gold); /* Botão ativo em dourado */
-    border-color: #fff;
-    transform: translateY(0);
-    box-shadow: 0 3px #000;
+    background: #ffd700 !important;
+    color: #003a7a !important;
+    border-color: white;
 }
 
-/* Esconder e Mostrar as Seções de Jogo */
+/* ===========================================
+   ÁREAS DE JOGO
+   =========================================== */
 .game-section {
     display: none;
-    padding: 10px;
+    animation: fadeIn 0.4s ease;
 }
 
 .game-section.active {
     display: block;
 }
 
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
 
-/* =================================================================
-   3. TERMO ROYALE (Onde estava a linha vertical!)
-   ================================================================= */
-
-/* CORREÇÃO: Coloca as linhas (rows) uma abaixo da outra (verticalmente) */
+/* ===========================================
+   TERMO: TABULEIRO + TECLADO
+   =========================================== */
 #board {
-    display: flex; 
-    flex-direction: column; /* ESSENCIAL: Empilha as linhas (rows) */
-    align-items: center; 
     margin: 20px auto;
+    display: grid;
+    gap: 6px;
+    justify-content: center;
 }
 
-/* CORREÇÃO: Coloca os tiles (blocos de letras) lado a lado (horizontalmente) */
-.row {
-    display: flex; 
-    margin-bottom: 5px;
-    gap: 5px;
-}
+.word-length-5 { grid-template-columns: repeat(5, 60px); }
+.word-length-6 { grid-template-columns: repeat(6, 55px); }
+.word-length-7 { grid-template-columns: repeat(7, 50px); }
 
 .tile {
-    width: 50px; 
-    height: 50px; 
-    font-size: 1.8em;
-    font-weight: 700;
-    color: #fff;
-    background-color: var(--color-tile-default);
+    width: 60px;
+    height: 60px;
+    background: #002851;
+    border: 3px solid #ffd700;
+    border-radius: 8px;
+    font-size: 32px;
     display: flex;
-    justify-content: center;
     align-items: center;
-    border: 3px solid #333;
-    border-radius: 5px;
-    user-select: none;
-    transition: background-color 0.3s, transform 0.3s;
+    justify-content: center;
+    color: white;
+    font-weight: 900;
+    text-transform: uppercase;
 }
 
-/* Classes de Estado */
-.tile.correct {
-    background-color: var(--color-correct);
-    border-color: var(--color-correct);
+/* ANIMAÇÃO FLIP */
+.flip {
+    animation: flipAnim 0.3s ease;
+}
+@keyframes flipAnim {
+    0% { transform: rotateX(0deg); }
+    100% { transform: rotateX(360deg); }
 }
 
-.tile.wrong-place {
-    background-color: var(--color-wrong-place);
-    border-color: var(--color-wrong-place);
+/* CORES DO TERMO */
+.correct {
+    background: #4dbf00 !important;
+    border-color: #88ff48 !important;
+}
+.wrong-place {
+    background: #ffcf22 !important;
+    border-color: #ffe960 !important;
+}
+.wrong {
+    background: #444 !important;
+    border-color: #222 !important;
+}
+.correct-row {
+    animation: winPulse 0.8s infinite;
+}
+@keyframes winPulse {
+    0% { box-shadow: 0 0 8px #ffea00; }
+    100% { box-shadow: 0 0 25px #ffe94a; }
 }
 
-.tile.wrong {
-    background-color: var(--color-wrong);
-    border-color: var(--color-wrong);
-}
-
-/* Teclado */
+/* TECLADO VIRTUAL */
 #keyboard {
-    margin-top: 20px;
-    user-select: none;
-}
-
-.key-row {
     display: flex;
-    justify-content: center;
-    margin-bottom: 8px;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 20px;
 }
 
-.key {
-    background-color: #666;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    padding: 15px 10px;
-    margin: 0 3px;
-    font-size: 0.9em;
-    font-weight: bold;
+.key, .key-large {
+    background: #003a7a;
+    border: 2px solid #ffd700;
+    color: white;
+    padding: 10px;
+    border-radius: 10px;
+    font-weight: 700;
     cursor: pointer;
-    min-width: 40px;
-    height: 50px;
-    transition: background-color 0.2s;
-    box-shadow: 0 2px #333;
 }
-
-.key:hover {
-    background-color: #888;
-}
-
 .key-large {
-    min-width: 60px;
-    padding: 15px 5px;
-    font-size: 0.8em;
+    flex: 1;
 }
 
-/* Classes de Teclado (Para refletir o Termo) */
-.key.correct {
-    background-color: var(--color-correct);
-}
+/* ===========================================
+   CRUZADINHA
+   =========================================== */
 
-.key.wrong-place {
-    background-color: var(--color-wrong-place);
-}
-
-.key.wrong {
-    background-color: var(--color-wrong);
-}
-
-
-/* =================================================================
-   4. CRUZADINHA MESTRA
-   ================================================================= */
-
-.cruzadinha-layout {
+.cruzadinha-container {
     display: flex;
     justify-content: center;
-    gap: 30px;
-    margin-top: 20px;
+    gap: 25px;
+    margin-bottom: 15px;
     flex-wrap: wrap;
 }
 
 .cruzadinha-grid-container {
     display: grid;
-    /* grid-template-columns é definido dinamicamente em cruzadinha.js */
-    border: 3px solid var(--color-gold);
-    background-color: #333;
-    max-width: 450px;
+    gap: 5px;
+    background: rgba(0,0,0,0.3);
+    padding: 10px;
+    border-radius: 12px;
+    border: 3px solid #ffd700;
 }
 
 .cruzadinha-tile {
-    width: 40px;
-    height: 40px;
-    border: 1px solid #000;
-    background-color: #fff;
-    color: #000;
-    font-size: 1.2em;
-    font-weight: bold;
+    width: 45px;
+    height: 45px;
+    background: #002851;
+    border: 3px solid #ffd700;
+    border-radius: 6px;
+    font-size: 28px;
+    font-weight: 900;
+    color: white;
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
     position: relative;
-    cursor: pointer;
-    user-select: none;
-    transition: background-color 0.1s;
 }
 
 .cruzadinha-tile.blank {
-    background-color: #333;
-    cursor: default;
+    background: #1b1b1b;
+    border: none;
 }
 
 .cruzadinha-tile-number {
+    font-size: 12px;
     position: absolute;
-    top: 1px;
-    left: 1px;
-    font-size: 0.6em;
-    color: var(--color-gold);
-    font-weight: bold;
-    z-index: 10;
+    top: -3px;
+    left: -3px;
+    background: #ffd700;
+    padding: 2px 4px;
+    border-radius: 4px;
+    color: #003a7a;
+    font-weight: 700;
 }
 
-/* Destaques da Cruzadinha */
-.cruzadinha-tile.active-word {
-    background-color: #cceeff; /* Azul claro para palavra em foco */
+.active-word {
+    background: #006bff !important;
 }
 
-.cruzadinha-tile.selected {
-    background-color: var(--color-gold); /* Célula atualmente focada em dourado */
-    color: #fff;
+.selected {
+    outline: 3px solid #ffd700;
 }
 
-.cruzadinha-tile.correct {
-    background-color: var(--color-correct);
-    color: #fff;
+/* CORRETA */
+.correct {
+    background: #4dbf00 !important;
+    border-color: #aaff58 !important;
 }
 
-.cruzadinha-clues {
-    text-align: left;
-    max-width: 300px;
-    color: #fff;
-}
-
-.cruzadinha-clues h3 {
-    color: var(--color-gold);
-    margin-top: 10px;
-    margin-bottom: 5px;
-    font-size: 1.3em;
-}
-
-.cruzadinha-clues ol {
-    padding-left: 20px;
-    font-size: 0.95em;
-}
-
-.cruzadinha-clues li {
-    margin-bottom: 5px;
-    cursor: pointer;
-    transition: color 0.1s;
-}
-
-.cruzadinha-clues li:hover {
-    color: var(--color-royal-blue);
-}
-
-
-/* =================================================================
-   5. MEMÓRIA DE BATALHA
-   ================================================================= */
-
-.memory-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-    margin: 20px auto;
-    max-width: 400px;
-}
-
-.memory-card {
-    width: 100%;
-    padding-bottom: 100%; /* Truque para ser sempre quadrado */
-    position: relative;
-    cursor: pointer;
-    transform-style: preserve-3d;
-    transition: transform 0.6s;
-}
-
-.card-face {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    backface-visibility: hidden;
-    border-radius: 8px;
-    border: 3px solid var(--color-gold);
+/* TECLADO CRUZADINHA */
+#cruzadinha-keyboard {
+    margin: 15px auto;
     display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
     justify-content: center;
-    align-items: center;
-    font-size: 2em;
-    font-weight: bold;
 }
 
-.card-back {
-    background-color: var(--color-royal-blue); /* Fundo da carta virada para baixo */
+.cruz-key {
+    background: #003a7a;
+    border: 3px solid #ffd700;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-weight: 800;
+    font-size: 20px;
+    cursor: pointer;
+    transition: 0.15s;
 }
 
-.card-front {
-    background-color: #fff;
-    color: var(--color-royal-blue);
-    transform: rotateY(180deg);
+.cruz-key:hover {
+    transform: scale(1.1);
 }
 
-.memory-card.flipped {
-    transform: rotateY(180deg);
+.cruz-key.big {
+    width: 90px;
 }
 
-.memory-card.matched .card-face {
-    border-color: var(--color-correct);
-    opacity: 0.7;
+/* RESET BUTTON */
+.reset-btn {
+    padding: 10px 18px;
+    border: none;
+    background: #ffd700;
+    color: #003a7a;
+    font-size: 18px;
+    font-weight: 700;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.reset-btn:hover {
+    transform: scale(1.08);
 }
 
-.memory-stats {
-    margin-top: 20px;
-    font-size: 1.2em;
-    color: var(--color-gold);
-}
-
-
-/* =================================================================
-   6. POPUP DE MENSAGENS (showMessage)
-   ================================================================= */
-
+/* ===========================================
+   POPUP DE MENSAGENS
+   =========================================== */
 .popup {
     position: fixed;
-    bottom: 50px;
+    top: 15px;
     left: 50%;
     transform: translateX(-50%);
-    padding: 10px 20px;
-    border-radius: 5px;
-    font-size: 1.2em;
-    font-weight: bold;
-    color: #fff;
-    z-index: 1000;
-    animation: fadeinout 2.5s forwards;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    padding: 12px 20px;
+    background: #002851;
+    border: 3px solid #ffd700;
+    border-radius: 10px;
+    font-size: 18px;
+    font-weight: 900;
+    z-index: 9999;
 }
 
-.popup.gold {
-    background-color: var(--color-gold);
+/* CORES BONUS */
+.gold {
+    background: #ffd700;
+    color: #003a7a;
 }
 
-.popup.royal-blue {
-    background-color: var(--color-royal-blue);
+.royal-blue {
+    background: #003a7a;
 }
 
-.popup.royal-blue-light {
-    background-color: var(--color-red); /* Usando vermelho para mensagens de erro */
+.royal-blue-light {
+    background: #7ab3ff;
 }
 
-.popup.green-glow {
-    background-color: var(--color-correct);
+.green-glow {
+    background: #4dbf00;
+    color: #003a7a;
+    border-color: #b9ff6a !important;
 }
 
-@keyframes fadeinout {
-    0%, 100% { opacity: 0; }
-    10%, 90% { opacity: 1; }
+/* ===========================================
+   RESPONSIVIDADE
+   =========================================== */
+
+@media (max-width: 600px) {
+    .tile { width: 45px; height: 45px; font-size: 25px; }
+    .cruzadinha-tile { width: 38px; height: 38px; font-size: 22px; }
+    .menu-btn { font-size: 16px; padding: 8px 16px; }
 }
